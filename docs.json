@@ -2,9 +2,12 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Samply",
   "theme": "almond",
-  "favicon": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg",
+  "favicon": {
+    "light": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg",
+    "dark": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg"
+  },
   "colors": {
-    "primary": "#adadad",
+    "primary": "#929298",
     "light": "#ffffff",
     "dark": "#0d0d0d"
   },
@@ -112,5 +115,14 @@
   },
   "fonts": {
     "family": "Inter"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "color": {
+      "light": "#fcfcfc",
+      "dark": "#0d0d0d"
+    }
   }
 }
