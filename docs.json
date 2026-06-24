@@ -149,5 +149,9 @@
         ]
       }
     ]
+  },
+  "logo": {
+    "light": "/images/logo.svg",
+    "dark": "/images/logo.svg"
   }
 }
