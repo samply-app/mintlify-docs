@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Samply",
-  "theme": "almond",
+  "theme": "mint",
   "favicon": {
     "light": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg",
     "dark": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg"
@@ -124,5 +124,30 @@
       "light": "#fcfcfc",
       "dark": "#0d0d0d"
     }
+  },
+  "footer": {
+    "socials": {
+      "instagram": "https://www.instagram.com/samply.app",
+      "youtube": "https://www.youtube.com/@samply-app"
+    },
+    "links": [
+      {
+        "header": "Legal",
+        "items": [
+          {
+            "label": "Privacy",
+            "href": "https://samply.app/privacy"
+          },
+          {
+            "label": "Terms",
+            "href": "https://samply.app/terms"
+          },
+          {
+            "label": "Security",
+            "href": "https://samply.app/security"
+          }
+        ]
+      }
+    ]
   }
 }
