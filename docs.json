@@ -153,5 +153,6 @@
   "logo": {
     "light": "/images/logo.svg",
     "dark": "/images/logo.svg"
-  }
+  },
+  "description": "Securely stream, share, and collaborate on audio from your phone and desktop with Samply."
 }
