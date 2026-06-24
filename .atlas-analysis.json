@@ -1,0 +1,140 @@
+{
+  "projectType": "saas",
+  "projectName": "Samply",
+  "projectDescription": "Samply is a professional audio sharing platform that lets creators upload, organize, and share high-fidelity tracks with clients, collaborators, and fans — with full control over access, payments, and playback quality.",
+  "theme": "almond",
+  "primaryColor": "#adadad",
+  "lightColor": "#ffffff",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quick-start",
+              "applications"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "overview",
+              "library",
+              "projects",
+              "file-system"
+            ]
+          },
+          {
+            "group": "Sharing & Access",
+            "pages": [
+              "sharing",
+              "comments",
+              "embedding",
+              "payments"
+            ]
+          },
+          {
+            "group": "Playback",
+            "pages": [
+              "playback-quality",
+              "playback-gapless",
+              "playback-loudness-matching",
+              "playback-spatial"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "dropbox",
+              "stripe"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "profile",
+              "preferences",
+              "security"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/squarespace",
+              "guides/animated-backgrounds",
+              "guides/samsung"
+            ]
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "faq"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/introduction",
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "api/projects",
+              "api/files",
+              "api/players",
+              "api/comments",
+              "api/webhooks"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Lossless & gapless audio streaming",
+    "Project-based file organization with folders and version stacks",
+    "Granular sharing controls (private collaborators, public links, passwords, paywalls)",
+    "Embedded player widget for external websites",
+    "Time-coded comments and feedback",
+    "Loudness matching (LUFS) and Dolby Atmos / spatial audio support",
+    "Stripe-powered paywalls for monetizing downloads and access",
+    "Dropbox integration for automatic file syncing",
+    "REST API with OAuth support and webhooks",
+    "Native iOS app, macOS desktop app, and PWA"
+  ],
+  "publicApiSurface": [
+    "POST /projects",
+    "GET /projects",
+    "GET /projects/:projectid",
+    "POST /projects/:projectid",
+    "POST /projects/:projectid/files",
+    "GET /projects/:projectid/files/:fileid",
+    "POST /projects/:projectid/files/:fileid",
+    "DELETE /projects/:projectid/files/:fileid",
+    "GET /projects/:projectid/files/:fileid/download",
+    "GET /projects/:projectid/all",
+    "POST /projects/:projectid/folders",
+    "GET /projects/:projectid/folders",
+    "POST /projects/:projectid/stacks",
+    "POST /projects/:projectid/files/:fileid/comments",
+    "GET /projects/:projectid/files/:fileid/comments",
+    "POST /players",
+    "GET /players",
+    "GET /players/:playerid",
+    "POST /players/:playerid",
+    "POST /webhooks",
+    "DELETE /webhooks/:webhookid",
+    "POST /auth-token"
+  ]
+}

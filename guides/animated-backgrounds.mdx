@@ -1,0 +1,60 @@
+---
+title: "Add Animated Backgrounds to Your Samply Player with Rive"
+sidebarTitle: "Animations"
+description: "Build a Rive animation and connect it to your Samply player so listeners enjoy a polished animated intro before the player controls appear."
+---
+
+Animated backgrounds let you greet listeners with a moment of motion before your Samply player loads. The animation plays as soon as someone opens your player link, and the album art, tracklist, and controls appear the instant the animation signals it's done. This guide walks you through building that animation in Rive and wiring it up to your player.
+
+<Warning>
+  Animated backgrounds are a **beta feature** and are still in active development. You may encounter rough edges or incomplete behaviour. If something isn't working as expected, check back for updates.
+</Warning>
+
+<Steps>
+
+  <Step title="Create a Rive project and artboard">
+    Open [Rive](https://rive.app) and create a new **Project**. Inside the project, create an **Artboard** and set its dimensions to **1980 × 1080** — this gives you a standard 16:9 desktop canvas.
+
+    Next, add two vertical **guides** at `656.25` and `1263.75`. These lines mark the inner 9:16 portrait zone — the area that remains visible on mobile screens. Anything outside the guides will be cropped on phones.
+
+    <Note>
+      Because most Samply listeners are on mobile, design your core animation within the guide boundaries first. You can layer in wider desktop elements afterwards.
+    </Note>
+  </Step>
+
+  <Step title="Design your assets">
+    Switch to the **Design** tab and build the visuals for your animation. Use whatever shapes, images, or typography you like. Keep in mind that only the area between your two guides will show on mobile, so make sure the most important elements sit within that zone.
+  </Step>
+
+  <Step title="Animate using Timeline 1">
+    Open the **Animate** tab. You'll see an animation timeline named **Timeline 1** — use this to keyframe your animation. The final frame of the timeline represents how your background should look when the animation ends. For example, you might animate everything off-screen or fade it to transparent so the player's default gradient shows through cleanly once the intro finishes.
+  </Step>
+
+  <Step title="Add the Done event">
+    Samply listens for a Rive **event** named `Done` to know when to reveal the player UI. As soon as this event fires, Samply brings in the album artwork, title, tracklist, and controls.
+
+    1. In your Rive project, add a new **Event** and name it exactly `Done` (case-sensitive).
+    2. In **Timeline 1**, find the point just before your animation finishes and **Report** the `Done` event there. This makes the UI appear at the same moment your animation wraps up, creating a smooth handoff.
+
+    <Note>
+      Your state machine **must** be named `Main`. Samply looks for this name specifically when loading your `.riv` file.
+    </Note>
+
+    <Tip>
+      Keep your total animation under **2–3 seconds**. Longer intros can feel like loading screens rather than moments of delight.
+    </Tip>
+  </Step>
+
+  <Step title="Export the .riv file">
+    When your animation is ready, export it from Rive as a `.riv` file. Save it somewhere accessible — you'll upload it to your player in the next step.
+  </Step>
+
+  <Step title="Add the animation to your Samply player">
+    1. In Samply, open **Settings** and enable **Beta Features**.
+    2. Open your player's options and navigate to the **Advanced** tab.
+    3. Click **Add Animation** and upload your `.riv` file.
+
+    Once uploaded, open your player link to preview the animation in action.
+  </Step>
+
+</Steps>

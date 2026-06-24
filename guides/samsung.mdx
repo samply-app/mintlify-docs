@@ -1,0 +1,51 @@
+---
+title: "Fix Samply Audio Stopping on Locked Samsung Devices"
+sidebarTitle: "Samsung Fix"
+description: "Prevent Samsung battery optimizations from cutting off Samply audio playback when your screen locks, for both newer and older devices."
+---
+
+On Samsung mobile devices, audio playback can stop the moment your screen locks. This happens because Samsung's battery optimization settings restrict network access for apps that aren't actively in use. The fix is straightforward, but the exact steps differ depending on how recent your device is — follow the tab that matches yours.
+
+<Tabs>
+
+  <Tab title="Newer Devices">
+    On updated Samsung devices, each app has its own battery setting. Changing Chrome and Samply to **Unrestricted** tells the system to keep them running in the background even when the screen is off.
+
+    <Steps>
+
+      <Step title="Open battery settings for Chrome">
+        Navigate to **Settings → Apps**, find **Chrome** (or whichever browser you use for Samply), and tap **Battery**. Set the battery usage option to **Unrestricted**.
+      </Step>
+
+      <Step title="Open battery settings for the Samply app">
+        Go back to **Settings → Apps**, find **Samply**, and tap **Battery**. Set the battery usage option to **Unrestricted**.
+      </Step>
+
+      <Step title="Restart Samply">
+        Close Samply completely and reopen it. Your audio should now continue playing after the screen locks.
+      </Step>
+
+    </Steps>
+  </Tab>
+
+  <Tab title="Older Devices">
+    On older Samsung devices, a single global setting controls whether apps can stay connected when the screen turns off. Enabling **Keep WiFi on During Sleep** allows Samply to maintain its network connection and keep playing audio after the screen locks.
+
+    <Steps>
+
+      <Step title="Open WiFi advanced settings">
+        Go to **Settings → Connections → Wi-Fi**, then tap the three-dot menu or **Advanced** to find additional options.
+      </Step>
+
+      <Step title="Enable Keep WiFi on During Sleep">
+        Find the **Keep WiFi on During Sleep** option and set it to **Always**. This prevents the device from cutting the connection when the screen turns off.
+      </Step>
+
+      <Step title="Restart Samply">
+        Close Samply completely and reopen it to apply the change. Audio should now continue uninterrupted when your screen locks.
+      </Step>
+
+    </Steps>
+  </Tab>
+
+</Tabs>

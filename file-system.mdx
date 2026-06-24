@@ -1,0 +1,76 @@
+---
+title: "Managing Files, Folders, and Version Stacks in Samply"
+sidebarTitle: "File System"
+description: "Explore Samply's cloud filesystem: files, folders, and version stacks — plus how to add, reorder, rename, and manage your audio file versions."
+---
+
+Samply manages your audio files in a cloud filesystem built around three concepts: **Files**, **Folders**, and **Stacks**. Files and Folders work similarly to what you're used to in any desktop OS, while Stacks introduce a powerful way to track and share multiple versions of the same file without losing your history.
+
+## Files
+
+Add files to a project by dragging and dropping them directly into the file view, or by clicking the **+ Add** button and selecting a file from your device. Once uploaded, right-click any file to access options for renaming, downloading, or deleting it.
+
+## Folders
+
+To create a folder, right-click anywhere in the file view and choose **Create folder**. Drag and drop files into a folder to organize your project however makes sense for your workflow.
+
+## Stacks
+
+A Stack is an ordered collection of file versions. The file at the bottom of a Stack is the first version you added; the file at the top is the most recent. When you share a file that belongs to a Stack, the link always points to the latest version automatically — no need to re-share when you upload a revision.
+
+### Adding Versions
+
+You can add a new version to a Stack in three ways:
+
+<Steps>
+  <Step title="Drag and drop onto an existing file">
+    Drag a new file directly onto an existing file in the project view. Samply stacks the new file on top, making it the latest version.
+  </Step>
+  <Step title="Use the Stack Preview (wafer)">
+    Click the version indicator (\"wafer\") on a file to open the Stack Preview, then click **Add version** and select a file from your device.
+  </Step>
+  <Step title="Drop into the File view">
+    Open the File view for an existing file, then drag and drop a new version directly into it.
+  </Step>
+</Steps>
+
+<Note>
+  Dragging one Stack onto another **combines** the two Stacks into one. The Stack you dragged is placed on top of the target Stack, becoming the most recent versions. Keep this in mind to avoid accidentally merging separate version histories.
+</Note>
+
+### Removing Versions
+
+To remove a version from a Stack, click the **X** icon on the version you want to remove. The removed file reappears next to its original Stack as a standalone file.
+
+<Info>
+  On smaller screens, tap **Edit** first to reveal the remove and reorder controls before making changes.
+</Info>
+
+### Re-ordering Versions
+
+Drag the drag-indicator on any version to move it up or down within the Stack. The original version names stay unchanged throughout reordering so your history remains clear.
+
+### Renaming Versions
+
+- **File name:** Click on the version's name and type the new name.
+- **Version tag:** Click on the version tag to rename it directly.
+
+<Note>
+  On mobile, tap **Edit** first to enter the edit state before renaming versions or tags.
+</Note>
+
+## Inheritance Rules
+
+Samply uses inheritance to keep file names consistent and reduce manual housekeeping.
+
+<Tabs>
+  <Tab title="Files">
+    A file's display name is inherited from its original uploaded filename by default. You can rename the file at any time inside Samply, but when someone downloads the file, it retains the original upload name rather than the renamed Samply name.
+  </Tab>
+  <Tab title="Stacks">
+    Stacks don't have a default name of their own. Instead, a Stack automatically inherits its name from the **primary version** — the file at the top of the Stack.
+
+    - If you give a Stack a custom name, that name is displayed instead of the inherited one.
+    - Clearing the custom name reverts the Stack back to inheriting from the primary version.
+  </Tab>
+</Tabs>

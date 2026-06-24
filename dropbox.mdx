@@ -1,0 +1,45 @@
+---
+title: "Sync Audio Files from Dropbox to Samply Automatically"
+sidebarTitle: "Dropbox"
+description: "Connect Dropbox to Samply and have your bounced audio files uploaded automatically in the background — no manual uploads required."
+---
+
+Samply's Dropbox integration lets you bounce files straight to your hard drive and have them appear in your Samply projects automatically. Instead of manually uploading after every session, you can set up the integration once and let the sync happen in the background while you keep working.
+
+<Note>
+  Samply is a **scoped** Dropbox app. It can only read and write files inside your dedicated Samply App Folder — it never accesses the rest of your Dropbox.
+</Note>
+
+## Connecting Dropbox
+
+<Steps>
+  <Step title="Open the Dropbox integration page">
+    In the sidebar, navigate to **Integrations → Dropbox**.
+  </Step>
+  <Step title="Click Connect">
+    Select **Connect** to be redirected to Dropbox's authorization page.
+  </Step>
+  <Step title="Grant permission">
+    Authorize Samply to access your Dropbox App Folder. Once you confirm, you're redirected back to Samply and the integration is live.
+  </Step>
+</Steps>
+
+## Using the Integration
+
+After setup, a dedicated folder appears in your Dropbox at **Dropbox → Apps → Samply**. Any files you add to this folder — whether through the Dropbox desktop client or the web interface — are automatically synced to Samply.
+
+### Upload to an existing project
+
+Open the Samply folder in Dropbox and look for sub-folders named after your existing projects. Drop audio files into one of those sub-folders and Samply will add them to the matching project automatically.
+
+<Note>
+  While the Dropbox integration is in beta, your existing projects may not appear as sub-folders automatically. If a project folder is missing, create it manually using the exact project name.
+</Note>
+
+### Create a new project
+
+To create a brand-new Samply project from Dropbox, create a new folder directly in the root of the Samply App Folder. Samply will detect the new folder and create a matching project. Any files you add to that folder will be uploaded to the new project immediately.
+
+## Disconnecting Dropbox
+
+To remove the integration, navigate back to **Integrations → Dropbox** and click **Disconnect**. This unlinks the two services, but all your existing files stay intact in both Samply and Dropbox — nothing is deleted.

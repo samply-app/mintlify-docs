@@ -1,0 +1,52 @@
+---
+title: "Spatial Audio and Dolby Atmos Playback in Samply App"
+sidebarTitle: "Spatial Audio"
+description: "Share and review Dolby Atmos mixes in Samply with timecoded comments and track sequencing — prerequisites, supported devices, and fallback behavior."
+---
+
+Samply supports spatial audio (Dolby Atmos) for audio professionals who want to incorporate immersive audio into their existing review and approval workflow. Apple and Dolby have partnered to deliver Atmos natively on Apple hardware, meaning these capabilities are available to anyone using a compatible Apple device — not just Apple Music subscribers.
+
+## Prerequisites for Spatial Audio Playback
+
+To listen to spatial audio on Samply, satisfy all three of the following prerequisites.
+
+<Steps>
+  <Step title="Upload a Supported Format">
+    Dolby recommends using the **Dolby Atmos Renderer** to export MP4 files for quality-control purposes. By default, these MP4 files contain a blank H.264 video stream and a multichannel DD+JOC audio stream.
+
+    **Samply only supports MP4 files exported from the Dolby Atmos Renderer.** Uploading a standard video MP4 or any other container will not trigger Atmos playback.
+  </Step>
+  <Step title="Listen on a Supported Device">
+    The following devices support spatial audio playback when running the latest available operating system:
+
+    - **iPhone 7** or later (built-in speakers)
+    - **iPad** built-in speakers on:
+      - iPad Pro 12.9‑inch (3rd generation and later)
+      - iPad Pro 11‑inch
+      - iPad Air (3rd generation and later)
+      - iPad (6th generation and later)
+      - iPad mini (5th generation and later)
+    - **iOS or iPadOS 15.1** or later
+    - **Mac with Apple silicon** (built-in speakers)
+    - **Apple TV 4K** with tvOS 15 or later
+
+    <Warning>
+      On macOS, you must open Samply in **Safari**. Chrome on macOS does not natively support Atmos MP4 files, so Atmos playback will not be available in that browser.
+    </Warning>
+  </Step>
+  <Step title="Upgrade to Samply Pro">
+    A **Samply Pro account** is required to share spatial audio files in a player with full features such as timecoded comments, track sequencing, and custom player options.
+
+    You can share MP4 files without Pro, but they will be treated as standard video MP4 files and spatial audio will not be enabled.
+
+    <Note>
+      Not ready to commit? Samply offers a **10-day free trial** of Samply Pro — the trial is applied automatically at checkout. Visit [samply.app/pricing](https://samply.app/pricing) to get started.
+    </Note>
+  </Step>
+</Steps>
+
+---
+
+## Fallback Behavior
+
+If a listener opens a spatial audio file on an unsupported browser or device, Samply automatically plays the **stereo mixdown** and displays an informative banner prompting them to reopen the link in Safari for the full Atmos experience. No action is required on your part — the fallback happens transparently.

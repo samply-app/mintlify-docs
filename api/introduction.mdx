@@ -1,0 +1,69 @@
+---
+title: "Samply REST API: Audio Projects, Players, and Files"
+sidebarTitle: "Introduction"
+description: "The Samply API gives you programmatic access to Projects, Players, and Files over REST — use any HTTPS client to build audio workflow integrations."
+---
+
+The Samply API is a REST interface that lets you create, read, update, and delete the core primitives that power your Samply workflow: Projects, Players, and Files. Every endpoint returns JSON, uses standard HTTP response codes, and authenticates via Bearer tokens — so you can connect from any tool that can make an HTTPS request, whether that's cURL, Postman, Zapier, or your own server-side code.
+
+<Info>
+  The Samply API is currently available on [team plans](https://samply.app/plans) and upon request. The Samply team can work with you to build custom solutions and extend the API wherever you need it.
+</Info>
+
+## Base URL
+
+All API requests are made to the following base URL:
+
+```
+https://samply.app/api/v0
+```
+
+## Quick example
+
+The snippet below creates a new player with comments enabled and downloads disabled — a great starting point for understanding the request shape.
+
+```javascript
+const baseUrl = "https://samply.app/api/v0";
+const token = "MY-UNIQUE-TOKEN";
+
+const response = await fetch(`${baseUrl}/players`, {
+  method: "POST",
+  body: JSON.stringify({
+    name: "Hello World Player",
+    options: {
+      downloads: false,
+      comments: true,
+      stacks: true,
+    }
+  }),
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const player = await response.json();
+```
+
+## Explore the API
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/api/authentication">
+    Learn how to generate personal access tokens and implement OAuth for third-party integrations.
+  </Card>
+  <Card title="Projects" icon="folder" href="/api/projects">
+    Create and manage projects — the containers that hold all your audio files.
+  </Card>
+  <Card title="Files" icon="file-audio" href="/api/files">
+    Upload, download, update, and delete audio files, folders, and stacks within projects.
+  </Card>
+  <Card title="Players" icon="play" href="/api/players">
+    Create and configure shareable player links with custom access controls and playback options.
+  </Card>
+  <Card title="Comments" icon="message" href="/api/comments">
+    Post and retrieve time-coded comments and replies on individual audio files.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/api/webhooks">
+    Subscribe to real-time event notifications for uploads, comments, and project changes.
+  </Card>
+</CardGroup>

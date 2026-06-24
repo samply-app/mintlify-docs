@@ -1,0 +1,106 @@
+---
+title: "Use Samply Upload Links with Squarespace Contact Forms"
+sidebarTitle: "Squarespace"
+description: "Connect your Squarespace contact form to a Samply upload link so visitors can submit files and contact details in one seamless step."
+---
+
+Samply upload links work great alongside Squarespace contact forms. By embedding an upload link above your form and injecting a small JavaScript snippet, you can pass the visitor's name and email directly into Samply — so they never have to type the same information twice.
+
+<Steps>
+
+  <Step title="Embed the upload link">
+    Add a **Code Block** to your Squarespace page and paste your Samply embed code. Give the `<iframe>` an `id` of `samply-upload` so the custom script can find it later.
+
+    ```html
+    <iframe id="samply-upload" src="https://samply.app/..."></iframe>
+    ```
+
+    Place this block directly above your Squarespace form block so the two elements appear together on the page.
+
+    <Tip>
+      You can embed the upload link **inside** the form block itself. Select the form, click **Edit Form Fields**, add a **Text Area** field, and paste the embed code into that field's **Description** box. The iframe will render inline with your form.
+    </Tip>
+  </Step>
+
+  <Step title="Inject your custom code">
+    Squarespace lets you add site-wide JavaScript through **Settings → Advanced → Code Injection**. Add your script in the **Footer** section — this ensures the page's form elements are fully loaded before the code runs.
+
+    To confirm code injection is working, paste a quick test snippet and reload your page:
+
+    ```html
+    <script>
+      alert("Samply!")
+    </script>
+    ```
+
+    Once you see the alert, remove it and move on to the full script in the next steps.
+  </Step>
+
+  <Step title="Read form values">
+    Samply needs the visitor's `name` and `email`. The most reliable way to capture these from a Squarespace form is to listen for `keyup` events across the whole page and match each event's `target.id` to the correct input field.
+
+    <Note>
+      Every Squarespace form input has a unique, auto-generated `id` (for example, `email-yui_3_17_2_1_...`). Open your browser's **Web Inspector** (DevTools → Elements) and click on each form field to find its exact `id`, then replace the placeholder IDs in the snippet below with your own.
+    </Note>
+
+    ```javascript
+    // Values of the inputs
+    let firstName = '';
+    let lastName  = '';
+    let email     = '';
+
+    // IDs of the input elements — replace with your own
+    const firstNameId = 'name-yui_3_17_2_1_1726169935413_20113-fname-field';
+    const lastNameId  = 'name-yui_3_17_2_1_1726169935413_20113-lname-field';
+    const emailId     = 'email-yui_3_17_2_1_1726169935413_20114-field';
+
+    window.addEventListener('keyup', (event) => {
+      const inputValue = event.target.value;
+
+      switch (event.target.id) {
+        case firstNameId: firstName = inputValue; break;
+        case lastNameId:  lastName  = inputValue; break;
+        case emailId:     email     = inputValue; break;
+      }
+    });
+    ```
+  </Step>
+
+  <Step title="Send form values to Samply">
+    With the visitor's details stored, use `window.postMessage()` to push `name` and `email` into the Samply iframe on every keystroke. Add a `submit` listener so Samply triggers the upload when the visitor clicks your form's **Submit** button.
+
+    Below is the complete, ready-to-paste script. Replace the `Id` constants with the real IDs you found in Step 3, then add the whole block to Squarespace's **Footer** code injection field.
+
+    ```html
+    <script>
+      let firstName = '';
+      let lastName = '';
+      let email = '';
+
+      const firstNameId = 'name-yui_3_17_2_1_1726169935413_20113-fname-field';
+      const lastNameId = 'name-yui_3_17_2_1_1726169935413_20113-lname-field';
+      const emailId = 'email-yui_3_17_2_1_1726169935413_20114-field';
+
+      function getSamplyElement() {
+        return document.getElementById("samply-upload");
+      }
+
+      window.addEventListener('keyup', (event) => {
+        const inputValue = event.target.value;
+        switch(event.target.id) {
+          case firstNameId: firstName = inputValue; break;
+          case lastNameId: lastName = inputValue; break;
+          case emailId: email = inputValue; break;
+        }
+        const name = firstName + ' ' + lastName;
+        getSamplyElement().contentWindow.postMessage({ name, email }, '*');
+      });
+
+      window.addEventListener('submit', (event) => {
+        getSamplyElement().contentWindow.postMessage({ submit: true }, '*');
+      });
+    </script>
+    ```
+  </Step>
+
+</Steps>

@@ -1,0 +1,133 @@
+---
+title: "Authenticating Samply API Requests: Tokens and OAuth"
+sidebarTitle: "Authentication"
+description: "Use personal access tokens or OAuth to authenticate every Samply API request securely — learn how to generate, use, and protect your credentials."
+---
+
+Every request you make to the Samply API must include a valid credential. The API supports two authentication methods: **personal access tokens** for direct integrations you control, and **OAuth** for services that need to connect on behalf of your users. Both methods pass credentials as a Bearer token in the `Authorization` header.
+
+## Personal access tokens
+
+Personal access tokens are the simplest way to authenticate. You generate a token from your Samply account settings, then include it in the `Authorization` header of every request.
+
+```
+Authorization: Bearer <Your Token>
+```
+
+Create and manage your tokens at [samply.app/preferences/api](https://samply.app/preferences/api).
+
+<Warning>
+  Your access tokens carry the same privileges as your Samply account. Never share them publicly — keep them out of GitHub repositories, client-side JavaScript, and any other publicly accessible location.
+</Warning>
+
+### Example request
+
+```javascript
+const response = await fetch("https://samply.app/api/v0/players", {
+  headers: {
+    Authorization: "Bearer YOUR_ACCESS_TOKEN"
+  }
+});
+```
+
+---
+
+## OAuth
+
+OAuth lets your service connect to Samply on behalf of your users without asking them to share their personal access tokens. Samply supports OAuth directly.
+
+<Note>
+  To get started with OAuth, contact Samply's lead software engineer at [matt@samplyaudio.com](mailto:matt@samplyaudio.com) to receive your `CLIENT_ID` and `CLIENT_SECRET`.
+</Note>
+
+### OAuth flow
+
+<Steps>
+  <Step title="Redirect the user to Samply for authorization">
+    Send your user to the Samply authorization URL. You must include `client_id` and `redirect_uri`; the remaining parameters are optional.
+
+    ```
+    https://samply.app/oauth/yourservice?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&error_uri=ERROR_URI&state=STATE
+    ```
+
+    <ParamField query="client_id" type="string" required>
+      Your `CLIENT_ID` as provided by the Samply team.
+    </ParamField>
+
+    <ParamField query="redirect_uri" type="string" required>
+      The URL in your service where Samply will redirect the user after they successfully authorize the connection.
+    </ParamField>
+
+    <ParamField query="error_uri" type="string">
+      The URL in your service where Samply will redirect the user if authorization fails or is declined.
+    </ParamField>
+
+    <ParamField query="state" type="string">
+      An optional value passed back to your service unchanged after a successful or unsuccessful authorization — useful for preventing CSRF attacks.
+    </ParamField>
+  </Step>
+
+  <Step title="Receive the authorization grant">
+    If the user grants access, Samply redirects to your `redirect_uri` with a `code` query parameter (and `state` if you provided it). If the user declines or an error occurs, Samply redirects to your `error_uri` — see [Error handling](#error-handling) below.
+  </Step>
+
+  <Step title="Exchange the code for an access token">
+    Your server makes a `POST` request to `/auth-token` with your credentials and the code received in the previous step.
+
+    ```javascript
+    const response = await fetch("https://samply.app/api/v0/auth-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_id: "CLIENT_ID",
+        client_secret: "CLIENT_SECRET",
+        code: "CODE_FROM_REDIRECT"
+      })
+    });
+    const { access_token } = await response.json();
+    ```
+
+    <ParamField body="client_id" type="string" required>
+      Your `CLIENT_ID` as provided by the Samply team.
+    </ParamField>
+
+    <ParamField body="client_secret" type="string" required>
+      Your `CLIENT_SECRET` as provided by the Samply team. Never expose this value in publicly accessible code.
+    </ParamField>
+
+    <ParamField body="code" type="string" required>
+      The authorization code provided by Samply after the user granted access.
+    </ParamField>
+
+    On success, Samply returns a `200` response containing the user's access token:
+
+    ```json
+    {
+      "access_token": "USER_ACCESS_TOKEN"
+    }
+    ```
+
+    You can now use this token to make API calls on behalf of that user.
+  </Step>
+</Steps>
+
+### Error handling
+
+When the user declines authorization or an error occurs, Samply redirects to your `error_uri` with the following query parameters:
+
+<ResponseField name="error" type="string">
+  An error code indicating what went wrong. Possible values:
+
+  <Expandable title="error values">
+    <ResponseField name="access_denied" type="string">
+      The user declined the authorization request.
+    </ResponseField>
+    <ResponseField name="server_error" type="string">
+      Something went wrong on Samply's server during the authorization process.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="error_description" type="string">
+  A human-readable, URI-encoded description of the error that occurred.
+</ResponseField>

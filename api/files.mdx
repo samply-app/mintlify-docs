@@ -1,0 +1,288 @@
+---
+title: "Files API: Upload, Download, and Manage Audio Files"
+sidebarTitle: "Files"
+description: "Upload audio files to Samply projects in two steps, then get, update, delete, and download them — plus manage folders and stacks via the API."
+---
+
+The Files API gives you full control over the audio files, folders, and stacks inside your Samply projects. Uploading is a deliberate two-step process: you first request a signed upload URL, then PUT the file directly to cloud storage using that URL. This approach keeps large file transfers fast and efficient without routing them through Samply's servers.
+
+## Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/projects/:projectid/files` | Request an upload URL |
+| `PUT` | `<url from upload response>` | Upload the file |
+| `GET` | `/projects/:projectid/files/:fileid` | Get a file, folder, or stack |
+| `POST` | `/projects/:projectid/files/:fileid` | Update a file, folder, or stack |
+| `DELETE` | `/projects/:projectid/files/:fileid` | Delete a file |
+| `GET` | `/projects/:projectid/files/:fileid/download` | Get a download URL for a file |
+| `GET` | `/projects/:projectid/all` | List all files, folders, and stacks |
+| `POST` | `/projects/:projectid/folders` | Create a folder |
+| `GET` | `/projects/:projectid/folders` | List folders in a project |
+| `POST` | `/projects/:projectid/stacks` | Create a stack |
+
+---
+
+## Upload a file
+
+Uploading a file is a two-step process. First, you request a signed upload URL from Samply. Then, you PUT the file directly to that URL along with metadata from the response.
+
+<Steps>
+  <Step title="Request an upload URL">
+    Send a `POST` request to `/projects/:projectid/files` with details about the file you want to upload. Samply returns a signed URL and metadata you'll need for the next step.
+
+    ### Body parameters
+
+    <ParamField body="name" type="string" required>
+      The filename as reported by the `name` property on the [File](https://developer.mozilla.org/en-US/docs/Web/API/File) object.
+    </ParamField>
+
+    <ParamField body="mimeType" type="string" required>
+      The MIME type of the file, as reported by the `type` property on the File object (e.g. `"audio/wav"`).
+    </ParamField>
+
+    <ParamField body="size" type="number | string" required>
+      The size of the file in bytes, as reported by the `size` property on the File object.
+    </ParamField>
+
+    <ParamField body="parentid" type="string">
+      The id of an existing folder or stack within the project to upload this file into.
+    </ParamField>
+
+    ### Response fields
+
+    <ResponseField name="url" type="string">
+      The signed URL to PUT the file to in the next step.
+    </ResponseField>
+
+    <ResponseField name="boxid" type="string">
+      The id of the asset being uploaded.
+    </ResponseField>
+
+    <ResponseField name="stackid" type="string">
+      The id of the stack the file will be uploaded to.
+    </ResponseField>
+
+    <ResponseField name="contentType" type="string">
+      The content type as confirmed by the server — use this as the `Content-Type` header in your PUT request.
+    </ResponseField>
+
+    <ResponseField name="metadata" type="object">
+      Upload metadata required as headers on the PUT request.
+
+      <Expandable title="metadata fields">
+        <ResponseField name="boxpath" type="string">
+          Required metadata value for the upload request.
+        </ResponseField>
+        <ResponseField name="destination" type="string">
+          Required metadata value for the upload request.
+        </ResponseField>
+        <ResponseField name="projectid" type="string">
+          The project id the file will be uploaded to.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Step>
+
+  <Step title="PUT the file to the upload URL">
+    Using the `url`, `contentType`, and `metadata` from the previous response, PUT the raw file to cloud storage. No authorization header is required for this request — the URL itself is the credential.
+
+    Set the following headers on your PUT request:
+
+    | Header | Value |
+    |--------|-------|
+    | `Content-Type` | `uploadData.contentType` |
+    | `x-goog-meta-destination` | `uploadData.metadata.destination` |
+    | `x-goog-meta-projectid` | `uploadData.metadata.projectid` |
+    | `x-goog-meta-boxpath` | `uploadData.metadata.boxpath` |
+  </Step>
+</Steps>
+
+### Full upload example
+
+```javascript
+const projectid = "MY_PROJECT_ID";
+const baseUrl = "https://samply.app/api/v0";
+
+// Step 1: Request an upload URL
+const file = document.getElementById("fileInput").files[0];
+const urlResponse = await fetch(`${baseUrl}/projects/${projectid}/files`, {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer YOUR_ACCESS_TOKEN",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: file.name,
+    mimeType: file.type,
+    size: file.size
+  })
+});
+const uploadData = await urlResponse.json();
+
+// Step 2: Upload the file
+await fetch(uploadData.url, {
+  method: "PUT",
+  body: file,
+  headers: {
+    "x-goog-meta-destination": uploadData.metadata.destination,
+    "x-goog-meta-projectid": uploadData.metadata.projectid,
+    "x-goog-meta-boxpath": uploadData.metadata.boxpath,
+    "Content-Type": uploadData.contentType,
+  }
+});
+```
+
+---
+
+## Download a file
+
+`GET /projects/:projectid/files/:fileid/download`
+
+Returns a temporary download URL for the specified file.
+
+```json
+{
+  "url": "https://...",
+  "expires": 1750041281427
+}
+```
+
+---
+
+## Get a file
+
+`GET /projects/:projectid/files/:fileid`
+
+Returns a [box object](#box-object) for the specified file, folder, or stack.
+
+---
+
+## Update a file
+
+`POST /projects/:projectid/files/:fileid`
+
+Updates an existing file, folder, or stack and returns the updated [box object](#box-object).
+
+### Body parameters
+
+<ParamField body="name" type="string">
+  A new display name for the file, folder, or stack.
+</ParamField>
+
+<ParamField body="addids" type="string[]">
+  An array of child box ids to add to a folder or stack.
+</ParamField>
+
+<ParamField body="removeids" type="string[]">
+  An array of child box ids to remove from a folder or stack.
+</ParamField>
+
+---
+
+## Delete a file
+
+`DELETE /projects/:projectid/files/:fileid`
+
+Deletes a file by id and returns an empty object with a `200` status on success.
+
+<Note>
+  If the file you delete is the **only version within a stack**, the parent stack will also be deleted automatically.
+</Note>
+
+---
+
+## List all files
+
+`GET /projects/:projectid/all`
+
+Returns an array of all [box objects](#box-object) within a project, including files, folders, and stacks. Hidden boxes are excluded.
+
+---
+
+## Folders
+
+Folders are organizational containers that can hold files and other folders within a project.
+
+### Create a folder
+
+`POST /projects/:projectid/folders`
+
+Creates a folder within a project and returns a [box object](#box-object) with `object: "folder"`.
+
+<ParamField body="name" type="string" required>
+  The display name for the folder.
+</ParamField>
+
+<ParamField body="color" type="string">
+  The folder color in hex format (e.g. `#ff0000`).
+</ParamField>
+
+### List folders
+
+`GET /projects/:projectid/folders`
+
+Returns an array of folder [box objects](#box-object) within the project.
+
+---
+
+## Stacks
+
+Stacks group multiple versions of the same file together. Each child in a stack represents a different version of the audio.
+
+### Create a stack
+
+`POST /projects/:projectid/stacks`
+
+Creates a stack within a project and returns a [box object](#box-object) with `object: "stack"`.
+
+<ParamField body="name" type="string" required>
+  The display name for the stack.
+</ParamField>
+
+<ParamField body="childids" type="string[]" required>
+  An ordered array of existing file box ids to group into this stack.
+</ParamField>
+
+---
+
+## Box object
+
+Files, folders, and stacks are all represented as box objects throughout the API.
+
+<ResponseField name="id" type="string">
+  The unique box id.
+</ResponseField>
+
+<ResponseField name="object" type="'file' | 'folder' | 'stack'">
+  The type of box.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  The display name of the box.
+</ResponseField>
+
+<ResponseField name="color" type="string">
+  The box color in hex format.
+</ResponseField>
+
+<ResponseField name="timeCreated" type="number">
+  The time the box was created, in milliseconds since the Unix epoch.
+</ResponseField>
+
+<ResponseField name="children" type="array">
+  Present on folders and stacks — an array of child boxes.
+
+  <Expandable title="children fields">
+    <ResponseField name="id" type="string">
+      The child box's id.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The child box's display name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="duration" type="number">
+  The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes.
+</ResponseField>

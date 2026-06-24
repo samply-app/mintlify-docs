@@ -1,0 +1,78 @@
+---
+title: "Audio Quality and Lossless Streaming in Samply App"
+sidebarTitle: "Quality"
+description: "Learn how Samply creates streaming variants from your uploads, configure lossless playback, and understand which browsers and file types support it."
+---
+
+Samply's audio playback engine is engineered to deliver the highest-quality audio to the widest possible set of devices. When you upload a file, Samply automatically generates multiple streaming variants so every listener gets the best experience their device can support — and you stay in control of the quality floor.
+
+## How Samply Creates Streaming Variants
+
+### Uncompressed Source Files (WAV)
+
+When you upload an uncompressed file such as a WAV, Samply produces three variants:
+
+1. **FLAC** — encoded at the original bit depth and sample rate
+2. **High-quality AAC** — 256 kbps
+3. **Medium-quality AAC** — 128 kbps
+
+The two AAC variants are combined into an **Adaptive** bitrate stream that adjusts to the listener's connection. The FLAC variant powers **Lossless** streaming and delivers the exact same waveform data contained in your original WAV file.
+
+### Compressed Source Files (MP3, AAC, etc.)
+
+When you upload a compressed file, Samply skips the FLAC variant because the source itself is already lossy. The AAC variants are still generated, and their bitrate is typically higher than the bitrate of the uploaded file, so transcoding losses are minimal.
+
+<Note>
+  To enable Lossless streaming for a compressed file, convert it to an uncompressed WAV before uploading. Samply will then generate the FLAC variant automatically.
+</Note>
+
+### Dolby Atmos MP4s
+
+When you upload a Dolby Atmos MP4, Samply streams the original MP4 to listeners on supported devices (Safari). Stereo AAC fallback variants are also created for devices without Atmos support — listeners on those devices will see a warning banner directing them to a supported browser.
+
+### ADM WAV Files
+
+Samply has partnered with Dolby to provide official ADM WAV support. When you upload an ADM WAV file, Samply processes it through Dolby's Audio Encoder to produce an Atmos MP4. From there, the same variants described above are generated automatically.
+
+---
+
+## Configuring Lossless Playback
+
+There are three places where you can configure the audio quality for lossless streaming, each with a different scope.
+
+<Tabs>
+  <Tab title="Audio Preferences">
+    Open **Audio preferences** in the app sidebar and set your default audio quality. This setting applies only to the specific device you are on and does not affect any other listener or device.
+  </Tab>
+  <Tab title="Project Options (Pro)">
+    In your **Project options** (available on the Pro tier), set a project-level audio quality default. This setting overrides each listener's own device preference, giving you consistent control over what your clients hear.
+  </Tab>
+  <Tab title="Player Link">
+    Any listener can click the **Audio Options** button inside the player link to change quality on the fly. This overrides all other defaults, but it only applies to that specific device and project session — it resets when the page is reloaded.
+  </Tab>
+</Tabs>
+
+---
+
+## Lossless Exceptions
+
+In some scenarios, lossless playback is unavailable. This happens when source files are lossy or when the listener's browser does not support lossless streaming.
+
+### Lossy Source File Types
+
+Lossless is not available if any of the following file types exist in the player:
+
+- `.mp4`
+- `.m4a`
+- `.mp3`
+- `.aac`
+
+### Unsupported Browsers
+
+<Warning>
+  The following browsers do not support lossless audio quality. Listeners on these browsers will always receive the Adaptive (AAC) stream regardless of your quality settings:
+
+  - **iOS Chrome**
+  - **iOS Instagram in-app browser**
+  - **iOS Safari version 13 or below**
+</Warning>

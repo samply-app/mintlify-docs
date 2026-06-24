@@ -1,0 +1,86 @@
+---
+title: "Accept Payments and Add Paywalls to Your Samply Links"
+sidebarTitle: "Payments"
+description: "Add a Stripe-powered paywall to any Samply project to gate access or downloads behind a payment, and manage or remove it at any time."
+---
+
+Paywalls let you accept payment from clients, collaborators, or fans before they can access your files or download your tracks. You can configure exactly what a payment unlocks and who it unlocks it for, giving you fine-grained control over how your audio is monetized.
+
+<Note>
+  Before you can add a paywall, you must connect your Stripe account. Follow the [Stripe integration guide](/stripe) to get set up first.
+</Note>
+
+## Paywall Configurations
+
+When you create a paywall, you choose two things:
+
+<CardGroup cols={2}>
+  <Card title="What it unlocks" icon="lock-open" href="/payments">
+    **Downloads** — payment unlocks the ability to download files.
+
+    **Access** — payment unlocks the ability to listen to the project at all.
+  </Card>
+  <Card title="Who it unlocks for" icon="users" href="/payments">
+    **Purchaser only** — the unlock applies exclusively to the person who paid.
+
+    **Everyone** — once anyone pays, the link unlocks for all visitors.
+  </Card>
+</CardGroup>
+
+## Add a Paywall
+
+<Steps>
+  <Step title="Open the payments section">
+    Open the **Options Panel** for your project or link, then expand the **Payments** section in the sidebar.
+  </Step>
+  <Step title="Set your price">
+    Enter the price you want to charge in the price field.
+
+    <Note>
+      All prices use the default currency associated with your Stripe account. To change your default currency, update it directly in your Stripe dashboard.
+    </Note>
+  </Step>
+  <Step title="Choose what and who to unlock">
+    Use the dropdowns to select whether the payment unlocks **Downloads** or **Access**, and whether that unlock applies to the **Purchaser only** or to **Everyone** with the link.
+  </Step>
+  <Step title="Activate the paywall">
+    Click **Set paywall** to apply your configuration. The paywall is now active on the link.
+  </Step>
+</Steps>
+
+## Edit a Paywall
+
+<Steps>
+  <Step title="Open the payments section">
+    Expand the **Payments** section in the Options Panel sidebar.
+  </Step>
+  <Step title="Click the edit icon">
+    Click the **edit** icon next to the active paywall.
+  </Step>
+  <Step title="Update and save">
+    Change the price, the unlock type, or the recipient setting, then save your changes.
+  </Step>
+</Steps>
+
+## Remove a Paywall
+
+<Steps>
+  <Step title="Open the payments section">
+    Expand the **Payments** section in the Options Panel sidebar.
+  </Step>
+  <Step title="Click the minus icon">
+    Click the **minus (−)** icon to remove the paywall entirely.
+  </Step>
+</Steps>
+
+<Note>
+  After you remove a paywall, access and download permissions revert to whatever you have configured in the link's standard access options (Downloads and Access toggles).
+</Note>
+
+## Test Your Paywall
+
+Project owners and collaborators automatically bypass paywall restrictions, so you won't see the paywall when you're signed in.
+
+<Note>
+  To test the experience your clients will see, open the project link in an **incognito window** while signed out. This gives you an accurate view of the paywall as a first-time visitor.
+</Note>

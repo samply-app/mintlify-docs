@@ -1,0 +1,309 @@
+---
+title: "Players API: Create and Configure Samply Player Links"
+sidebarTitle: "Players"
+description: "Create, configure, and update Samply players — shareable audio links with fine-grained control over playback quality, downloads, comments, and paywalls."
+---
+
+Players are shareable windows into your Samply projects. Each player defines exactly which files are accessible, how listeners can interact with them, and what access controls are in place — from public links to password-protected or paywalled experiences.
+
+<Note>
+  In the Samply app, players are referred to as **Links**. They are the same thing. When you create or manage links through the API, you work with the `/players` endpoints.
+</Note>
+
+## Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/players` | Create a player |
+| `GET` | `/players` | List all players you own |
+| `GET` | `/players/:playerid` | Get a player by id |
+| `POST` | `/players/:playerid` | Update a player |
+
+---
+
+## Create a player
+
+`POST /players`
+
+Creates a new player and returns a [player object](#player-object). If you don't provide a `projectid`, Samply will create a new project for the player automatically.
+
+### Body parameters
+
+<ParamField body="name" type="string">
+  A human-readable title for the player.
+</ParamField>
+
+<ParamField body="projectid" type="string">
+  The id of an existing project to create the player for. When provided, no new project is created.
+</ParamField>
+
+<ParamField body="folderid" type="string">
+  The id of a folder within the project to scope this player to. Requires `projectid`.
+</ParamField>
+
+<ParamField body="boxids" type="string[]">
+  An array of specific file ids within the project to include in this player. Requires `projectid`. Cannot be used alongside `folderid`.
+</ParamField>
+
+<ParamField body="public" type="boolean">
+  Whether the player link is publicly accessible. Defaults to the creator's in-app preference, then falls back to `true`.
+</ParamField>
+
+<ParamField body="upload" type="object">
+  Options for a public upload portal attached to this player's project.
+
+  <Expandable title="upload fields">
+    <ParamField body="enabled" type="boolean">
+      Enable the public upload portal for this project.
+    </ParamField>
+    <ParamField body="header" type="string">
+      The title displayed at the top of the upload portal.
+    </ParamField>
+    <ParamField body="greeting" type="string">
+      A subheader or welcome message displayed on the upload portal.
+    </ParamField>
+    <ParamField body="redirect" type="string">
+      A URL to redirect the user to after their upload completes.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="options" type="object">
+  Playback and display configuration for the player.
+
+  <Expandable title="options fields">
+    <ParamField body="quality" type="'original' | 'compressed' | 'lossless'">
+      Default audio playback quality. If not set, Samply uses the creator's default preference. When undefined, the player automatically selects the highest quality the listener's connection supports.
+    </ParamField>
+    <ParamField body="metadata" type="boolean">
+      Whether to show file metadata in the player. Defaults to `false` if no preference is set.
+    </ParamField>
+    <ParamField body="isrc" type="boolean">
+      Whether to show ISRC codes in the player if the uploaded files include them. Defaults to `false` if no preference is set.
+    </ParamField>
+    <ParamField body="downloads" type="boolean">
+      Whether to allow listeners to download files. Defaults to `true` if no preference is set.
+    </ParamField>
+    <ParamField body="comments" type="boolean">
+      Whether to allow listeners to post comments. Defaults to `true` if no preference is set.
+    </ParamField>
+    <ParamField body="loudnessMatch" type="boolean">
+      Whether to enable loudness matching during playback. Defaults to `false` if no preference is set.
+    </ParamField>
+    <ParamField body="targetLufs" type="number">
+      The target LUFS value when loudness matching is enabled.
+    </ParamField>
+    <ParamField body="loudnessPlatform" type="'amazon-music' | 'apple-music' | 'deezer' | 'spotify' | 'tidal' | 'youtube'">
+      A streaming platform preset to use as the loudness target.
+    </ParamField>
+    <ParamField body="studio" type="boolean">
+      Whether to enable studio branding, if the creator has configured it. Defaults to `false` if no preference is set.
+    </ParamField>
+    <ParamField body="stacks" type="boolean">
+      Whether all versions in a stack are available to listeners. When `false`, only the most recent version is shown. Defaults to `false` if no preference is set.
+    </ParamField>
+    <ParamField body="samplyCTA" type="boolean">
+      Whether to show the Samply call-to-action popup after a listener downloads files. Defaults to `true` if no preference is set.
+    </ParamField>
+    <ParamField body="boxSubtitle" type="'artist' | 'timestamp' | 'none'">
+      What to display below each track in the player. `"artist"` shows the metadata artist (falling back to the uploader's name). Defaults to `"artist"`.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="payment" type="object">
+  Paywall configuration for the player. Your Stripe integration must be set up in Samply before using this field.
+
+  <Expandable title="payment fields">
+    <ParamField body="price" type="number">
+      The paywall price in cents.
+    </ParamField>
+    <ParamField body="fulfillment" type="'allow-download' | 'allow-access'">
+      The action unlocked after a listener pays. `"allow-download"` enables downloads; `"allow-access"` enables viewing access.
+    </ParamField>
+    <ParamField body="recipient" type="'everyone' | 'customer'">
+      Who gains access after a payment. `"everyone"` unlocks the player for all users once one person pays. `"customer"` only unlocks it for the paying user.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="collaborators" type="array">
+  An array of collaborators to invite to the player.
+
+  <Expandable title="collaborator fields">
+    <ParamField body="email" type="string" required>
+      The collaborator's email address.
+    </ParamField>
+    <ParamField body="role" type="'admin' | 'editor' | 'viewer'" required>
+      The permission level to grant this collaborator.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="sortBy" type="object">
+  Default sort order for files within the player.
+
+  <Expandable title="sortBy fields">
+    <ParamField body="criterion" type="'custom' | 'name' | 'duration' | 'size' | 'bitDepth' | 'sampleRate' | 'bitRate' | 'channels' | 'lufs' | 'timeModified' | 'timeCreated' | 'kind'">
+      The attribute to sort files by.
+    </ParamField>
+    <ParamField body="ascending" type="boolean">
+      Set to `true` to sort in ascending order.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```javascript
+const response = await fetch("https://samply.app/api/v0/players", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer YOUR_ACCESS_TOKEN",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: "Final Mixes",
+    projectid: "MY_PROJECT_ID",
+    public: false,
+    options: {
+      downloads: false,
+      comments: true,
+      stacks: true,
+      quality: "lossless"
+    }
+  })
+});
+const player = await response.json();
+```
+
+---
+
+## Update a player
+
+`POST /players/:playerid`
+
+Updates an existing player and returns the updated [player object](#player-object). You can modify the player name, visibility, options, and payment configuration.
+
+### Body parameters
+
+<ParamField body="name" type="string">
+  A new human-readable title for the player.
+</ParamField>
+
+<ParamField body="public" type="boolean">
+  Whether the player link is publicly accessible.
+</ParamField>
+
+<ParamField body="options" type="object">
+  Updated playback and display configuration. Accepts the same fields as the create endpoint's `options` object.
+</ParamField>
+
+<ParamField body="payment" type="object">
+  Updated paywall configuration. Accepts the same fields as the create endpoint's `payment` object.
+</ParamField>
+
+---
+
+## Get a player
+
+`GET /players/:playerid`
+
+Returns a single [player object](#player-object) for the given player id.
+
+---
+
+## List owned players
+
+`GET /players`
+
+Returns an array of all [player objects](#player-object) that you own.
+
+---
+
+## Player object
+
+All player endpoints return a player object with the following structure.
+
+<ResponseField name="id" type="string">
+  The unique player id.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  The human-readable title of the player.
+</ResponseField>
+
+<ResponseField name="object" type="string">
+  Always `"player"`.
+</ResponseField>
+
+<ResponseField name="projectid" type="string">
+  The id of the project this player is linked to.
+</ResponseField>
+
+<ResponseField name="folderid" type="string">
+  The id of the folder this player is scoped to, if applicable.
+</ResponseField>
+
+<ResponseField name="boxids" type="string[]">
+  The array of specific file ids included in this player, if scoped to individual files.
+</ResponseField>
+
+<ResponseField name="color" type="string">
+  The player's display color in hex format.
+</ResponseField>
+
+<ResponseField name="public" type="boolean">
+  Whether the player link is publicly accessible.
+</ResponseField>
+
+<ResponseField name="timeCreated" type="number">
+  The time the player was created, in milliseconds since the Unix epoch.
+</ResponseField>
+
+<ResponseField name="timeModified" type="number">
+  The time the player was last modified, in milliseconds since the Unix epoch.
+</ResponseField>
+
+<ResponseField name="options" type="object">
+  The player's full configuration options.
+
+  <Expandable title="options fields">
+    <ResponseField name="quality" type="string">
+      Default audio playback quality: `"original"`, `"compressed"`, or `"lossless"`.
+    </ResponseField>
+    <ResponseField name="metadata" type="boolean">
+      Whether file metadata is shown in the player.
+    </ResponseField>
+    <ResponseField name="isrc" type="boolean">
+      Whether ISRC codes are shown in the player.
+    </ResponseField>
+    <ResponseField name="downloads" type="boolean">
+      Whether listeners can download files.
+    </ResponseField>
+    <ResponseField name="comments" type="boolean">
+      Whether listeners can post comments.
+    </ResponseField>
+    <ResponseField name="loudnessMatch" type="boolean">
+      Whether loudness matching is enabled.
+    </ResponseField>
+    <ResponseField name="targetLufs" type="number">
+      The target LUFS value for loudness matching.
+    </ResponseField>
+    <ResponseField name="loudnessPlatform" type="string">
+      The streaming platform loudness preset in use.
+    </ResponseField>
+    <ResponseField name="studio" type="boolean">
+      Whether studio branding is enabled.
+    </ResponseField>
+    <ResponseField name="stacks" type="boolean">
+      Whether all stack versions are available to listeners.
+    </ResponseField>
+    <ResponseField name="samplyCTA" type="boolean">
+      Whether the Samply call-to-action is shown after downloads.
+    </ResponseField>
+    <ResponseField name="boxSubtitle" type="string">
+      What is displayed below each track: `"artist"`, `"timestamp"`, or `"none"`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

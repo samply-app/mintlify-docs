@@ -1,0 +1,76 @@
+---
+title: "Loudness Matching: Compare Your Mixes at Equal Volume"
+sidebarTitle: "Loudness"
+description: "Use Samply's loudness matching to level-match tracks by LUFS and True Peak, removing perceived volume as a variable when comparing different mixes."
+---
+
+When you compare two different mixes of the same track, the louder one often sounds better — even when it isn't. Loudness matching removes that variable by normalizing each track to the same perceived loudness before it reaches your ears, so you can make decisions based on the actual quality of the mix rather than its level.
+
+## About LUFS and True Peak
+
+Samply uses two industry-standard measurements to quantify loudness:
+
+- **LUFS (Loudness Units relative to Full Scale)** — accounts for the frequency response of the human auditory system, giving a perceptual measure of overall loudness.
+- **True Peak (TP)** — measures the absolute peak level of the audio signal.
+
+Both are defined by an [international standard (ITU-R BS.1770)](https://www.itu.int/rec/R-REC-BS.1770) and are the same measurements used by streaming services such as Spotify, Apple Music, and Tidal to normalize uploaded tracks.
+
+<Info>
+  Loudness matching is **off by default** and completely optional. It does not apply to any tracks uploaded before September 6th, 2022.
+</Info>
+
+---
+
+## Enabling Loudness Matching
+
+Open **Audio preferences** in the left sidebar of the app, then enable the **Loudness matching** switch. Once enabled, the same options are available to your clients from any shared player that has loudness matching turned on in the player options.
+
+---
+
+## Choosing a Target Loudness
+
+### Platform Presets
+
+Samply partners with [Loudness Penalty](https://www.loudnesspenalty.com/) to offer platform-specific loudness targets. Select the streaming platform you want to emulate:
+
+- **Spotify**
+- **Apple Music**
+- **Tidal**
+- **Amazon Music**
+- **YouTube Music**
+
+### Custom LUFS
+
+Enter any value between **-60 and 0** in the LUFS input field to set a custom loudness target. Samply will apply gain according to the rules below to reach that target without introducing clipping.
+
+---
+
+## How Gain Is Applied
+
+When loudness matching is active and your browser is supported, Samply calculates the required gain using the following rules:
+
+- If the **target LUFS is lower** than the original LUFS, Samply applies **negative gain** to bring the level down to the target.
+- If the **target LUFS is higher** than the original LUFS, Samply applies **positive gain** up to the target or until only **1 dB of headroom** remains (based on the original True Peak) — whichever limit is reached first.
+- Samply **never introduces clipping**.
+
+**Example:** You upload a track measured at -18 LUFS / -4 TP and set a target of -14 LUFS. Samply applies 3 dB of positive gain, resulting in a playback level of -15 LUFS / -1 TP.
+
+<Tip>
+  If you upload a track with a True Peak of 0 dB, Samply will never apply positive gain to it, since there is no headroom available.
+</Tip>
+
+---
+
+## Browser Support and Caveats
+
+Loudness matching is fully supported on most modern browsers, with the following exceptions.
+
+### Safari
+
+On Safari, HLS streaming is incompatible with the Web Audio API due to a known [WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=180696). To work around this, Samply streams the underlying asset directly when loudness matching is enabled on **Safari 15.6 or later**.
+
+### iOS Screen Lock
+
+<Warning>
+  On iOS devices, the Web Audio context is suspended when the screen locks. If loudness matching is enabled, **playback will stop whenever the screen locks**. Disable loudness matching or keep your screen active to avoid interrupted playback on iOS.
+</Warning>

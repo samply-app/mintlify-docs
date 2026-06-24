@@ -1,0 +1,78 @@
+---
+title: "Embedding a Samply Player: Dimensions, Colors, and Setup"
+sidebarTitle: "Embedding"
+description: "Copy an iframe embed code from Samply, paste it into your website, and customize the player dimensions and color to match your brand."
+---
+
+Embedding a Samply player lets your site visitors listen to high-fidelity, lossless audio without ever leaving your page. The player inherits your project's custom color by default, so it blends naturally into your site design — and you can override that color per embed if you need to.
+
+<Steps>
+  <Step title="Copy the embed code">
+    Every Samply player has an **Embed** button that copies the iframe code to your clipboard. You can find this button in any of the following places:
+
+    - Top-right corner of the player (when you're logged in)
+    - Context menu in your library
+    - Context menu in your project's **Players** tab
+    - The project **Share Dialog**
+
+    The copied code looks like this:
+
+    ```html
+    <iframe src="https://samply.app/embed/<Player ID>" frameborder="0"></iframe>
+    ```
+  </Step>
+  <Step title="Add the code to your website">
+    Open your website's HTML and paste the iframe code into the location where you want the player to appear. Place it inside the `<body>` or `<main>` tags.
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>My Website</title>
+    </head>
+    <body>
+      <main class="container">
+          <h2>Welcome to Our Website</h2>
+          <p>This is a simple demo website for Samply embedded players!</p>
+
+          <!-- Embedded Player -->
+          <iframe src="https://samply.app/embed/<Player ID>" frameborder="0"></iframe>
+
+      </main>
+    </body>
+    </html>
+    ```
+  </Step>
+  <Step title="Customize the player">
+    You can adjust two properties directly on the iframe tag: **dimensions** and **color**.
+
+    **Set the width and height**
+
+    Add `width` and `height` attributes to the iframe tag using any valid CSS length value:
+
+    ```html
+    <iframe
+      src="https://samply.app/embed/<Player ID>"
+      width="100%"
+      height="480px"
+      frameborder="0">
+    </iframe>
+    ```
+
+    **Change the accent color**
+
+    Append a `?color=rrggbb` query parameter to the `src` URL. Use a six-digit hex color value in RGB format — omit the `#` character:
+
+    ```html
+    <iframe
+      src="https://samply.app/embed/<Player ID>?color=1a2b3c"
+      width="100%"
+      frameborder="0">
+    </iframe>
+    ```
+
+    <Tip>
+      The color you set here overrides the project's default color for this embed only. Other embeds of the same player are not affected.
+    </Tip>
+  </Step>
+</Steps>

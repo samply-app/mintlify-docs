@@ -1,0 +1,116 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Samply",
+  "theme": "almond",
+  "favicon": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg",
+  "colors": {
+    "primary": "#adadad",
+    "light": "#ffffff",
+    "dark": "#0d0d0d"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Go to Samply",
+      "href": "https://samply.app"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quick-start",
+              "applications"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "overview",
+              "library",
+              "projects",
+              "file-system"
+            ]
+          },
+          {
+            "group": "Sharing & Access",
+            "pages": [
+              "sharing",
+              "comments",
+              "embedding",
+              "payments"
+            ]
+          },
+          {
+            "group": "Playback",
+            "pages": [
+              "playback-quality",
+              "playback-gapless",
+              "playback-loudness-matching",
+              "playback-spatial"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "dropbox",
+              "stripe"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "profile",
+              "preferences",
+              "security"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/squarespace",
+              "guides/animated-backgrounds",
+              "guides/samsung"
+            ]
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "faq"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/introduction",
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "api/projects",
+              "api/files",
+              "api/players",
+              "api/comments",
+              "api/webhooks"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fonts": {
+    "family": "Inter"
+  }
+}
