@@ -1,0 +1,4163 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Samply API",
+    "version": "0.0",
+    "description": "The Samply API lets you manage projects, files, players, comments, and webhooks programmatically. All requests are authenticated with a bearer token."
+  },
+  "servers": [
+    {
+      "url": "https://samply.app/api/v0"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Projects"
+    },
+    {
+      "name": "Files"
+    },
+    {
+      "name": "Players"
+    },
+    {
+      "name": "Comments"
+    },
+    {
+      "name": "Webhooks"
+    }
+  ],
+  "paths": {
+    "/projects": {
+      "post": {
+        "summary": "Create a project",
+        "description": "Create a new Samply project, optionally inviting collaborators and configuring an upload portal. Creates a new project and returns a project object. As a side effect, Samply also creates a project-scoped player using your default player options — that player automatically includes all files added to the project.",
+        "operationId": "createProject",
+        "tags": [
+          "Projects"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A human-readable title for the project."
+                  },
+                  "upload": {
+                    "type": "object",
+                    "description": "Options for the project's public upload portal.",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enable the public upload portal for this project."
+                      },
+                      "header": {
+                        "type": "string",
+                        "description": "The title displayed at the top of the upload portal."
+                      },
+                      "greeting": {
+                        "type": "string",
+                        "description": "A subheader or welcome message displayed on the upload portal."
+                      },
+                      "redirect": {
+                        "type": "string",
+                        "description": "A URL to redirect the user to after their upload completes."
+                      }
+                    }
+                  },
+                  "collaborators": {
+                    "type": "array",
+                    "description": "An array of collaborators to invite when the project is created. Each entry requires an email address and a role.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "description": "The collaborator's email address."
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "admin",
+                            "editor",
+                            "viewer"
+                          ],
+                          "description": "The permission level to grant this collaborator on the project."
+                        }
+                      },
+                      "required": [
+                        "email",
+                        "role"
+                      ]
+                    }
+                  },
+                  "sortBy": {
+                    "type": "object",
+                    "description": "Default sort order for files within the project.",
+                    "properties": {
+                      "criterion": {
+                        "type": "string",
+                        "enum": [
+                          "custom",
+                          "name",
+                          "duration",
+                          "size",
+                          "bitDepth",
+                          "sampleRate",
+                          "bitRate",
+                          "channels",
+                          "lufs",
+                          "timeModified",
+                          "timeCreated",
+                          "kind"
+                        ],
+                        "description": "The attribute to sort files by."
+                      },
+                      "ascending": {
+                        "type": "boolean",
+                        "description": "Set to `true` to sort in ascending order, `false` for descending."
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created project object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique project id."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The human-readable title of the project."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"project\"`."
+                    },
+                    "artwork": {
+                      "type": "string",
+                      "description": "A download URL for the project's cover artwork."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The project's display color in hex format (e.g. `#a259ff`)."
+                    },
+                    "creator": {
+                      "type": "object",
+                      "description": "The user who created the project.",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "description": "The creator's human-readable display name."
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The creator's email address."
+                        },
+                        "photoURL": {
+                          "type": "string",
+                          "description": "A download URL for the creator's profile picture."
+                        },
+                        "uid": {
+                          "type": "string",
+                          "description": "The creator's unique user id."
+                        }
+                      }
+                    },
+                    "size": {
+                      "type": "number",
+                      "description": "The total size in bytes of all files contained within the project."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the project was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the project was last modified, in milliseconds since the Unix epoch."
+                    },
+                    "upload": {
+                      "type": "object",
+                      "description": "The project's upload portal configuration.",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether the public upload portal is enabled."
+                        },
+                        "header": {
+                          "type": "string",
+                          "description": "The upload portal title."
+                        },
+                        "greeting": {
+                          "type": "string",
+                          "description": "The upload portal subheader."
+                        },
+                        "redirect": {
+                          "type": "string",
+                          "description": "The URL users are redirected to after completing an upload."
+                        }
+                      }
+                    },
+                    "sortBy": {
+                      "type": "object",
+                      "description": "The default file sort configuration for the project.",
+                      "properties": {
+                        "criterion": {
+                          "type": "string",
+                          "description": "The attribute files are sorted by."
+                        },
+                        "ascending": {
+                          "type": "boolean",
+                          "description": "Whether files are sorted in ascending order."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "mSg4Nu5vAch9pkCEcgDP",
+                  "object": "project",
+                  "name": "Album Mixes — Q4",
+                  "artwork": "https://media.samply.app/artwork/9f2a.jpg",
+                  "color": "#a259ff",
+                  "creator": {
+                    "displayName": "Alex Rivera",
+                    "email": "alex@studio.com",
+                    "photoURL": "https://media.samply.app/users/alex.jpg",
+                    "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+                  },
+                  "size": 524288000,
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427,
+                  "upload": {
+                    "enabled": true,
+                    "header": "Send us your stems",
+                    "greeting": "Upload your files below",
+                    "redirect": "https://studio.com/thanks"
+                  },
+                  "sortBy": {
+                    "criterion": "name",
+                    "ascending": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List projects",
+        "description": "Retrieve all Samply projects that you own. Returns an array of all project objects that you own.",
+        "operationId": "listProjects",
+        "tags": [
+          "Projects"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of project objects that you own.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique project id."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The human-readable title of the project."
+                      },
+                      "object": {
+                        "type": "string",
+                        "description": "Always `\"project\"`."
+                      },
+                      "artwork": {
+                        "type": "string",
+                        "description": "A download URL for the project's cover artwork."
+                      },
+                      "color": {
+                        "type": "string",
+                        "description": "The project's display color in hex format (e.g. `#a259ff`)."
+                      },
+                      "creator": {
+                        "type": "object",
+                        "description": "The user who created the project.",
+                        "properties": {
+                          "displayName": {
+                            "type": "string",
+                            "description": "The creator's human-readable display name."
+                          },
+                          "email": {
+                            "type": "string",
+                            "description": "The creator's email address."
+                          },
+                          "photoURL": {
+                            "type": "string",
+                            "description": "A download URL for the creator's profile picture."
+                          },
+                          "uid": {
+                            "type": "string",
+                            "description": "The creator's unique user id."
+                          }
+                        }
+                      },
+                      "size": {
+                        "type": "number",
+                        "description": "The total size in bytes of all files contained within the project."
+                      },
+                      "timeCreated": {
+                        "type": "number",
+                        "description": "The time the project was created, in milliseconds since the Unix epoch."
+                      },
+                      "timeModified": {
+                        "type": "number",
+                        "description": "The time the project was last modified, in milliseconds since the Unix epoch."
+                      },
+                      "upload": {
+                        "type": "object",
+                        "description": "The project's upload portal configuration.",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the public upload portal is enabled."
+                          },
+                          "header": {
+                            "type": "string",
+                            "description": "The upload portal title."
+                          },
+                          "greeting": {
+                            "type": "string",
+                            "description": "The upload portal subheader."
+                          },
+                          "redirect": {
+                            "type": "string",
+                            "description": "The URL users are redirected to after completing an upload."
+                          }
+                        }
+                      },
+                      "sortBy": {
+                        "type": "object",
+                        "description": "The default file sort configuration for the project.",
+                        "properties": {
+                          "criterion": {
+                            "type": "string",
+                            "description": "The attribute files are sorted by."
+                          },
+                          "ascending": {
+                            "type": "boolean",
+                            "description": "Whether files are sorted in ascending order."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "mSg4Nu5vAch9pkCEcgDP",
+                    "object": "project",
+                    "name": "Album Mixes — Q4",
+                    "artwork": "https://media.samply.app/artwork/9f2a.jpg",
+                    "color": "#a259ff",
+                    "creator": {
+                      "displayName": "Alex Rivera",
+                      "email": "alex@studio.com",
+                      "photoURL": "https://media.samply.app/users/alex.jpg",
+                      "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+                    },
+                    "size": 524288000,
+                    "timeCreated": 1750041281427,
+                    "timeModified": 1750041281427,
+                    "upload": {
+                      "enabled": true,
+                      "header": "Send us your stems",
+                      "greeting": "Upload your files below",
+                      "redirect": "https://studio.com/thanks"
+                    },
+                    "sortBy": {
+                      "criterion": "name",
+                      "ascending": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}": {
+      "get": {
+        "summary": "Get a project",
+        "description": "Retrieve a single Samply project by its id, including its settings and the project object schema. Returns a single project object for the given project id.",
+        "operationId": "getProject",
+        "tags": [
+          "Projects"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested project object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique project id."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The human-readable title of the project."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"project\"`."
+                    },
+                    "artwork": {
+                      "type": "string",
+                      "description": "A download URL for the project's cover artwork."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The project's display color in hex format (e.g. `#a259ff`)."
+                    },
+                    "creator": {
+                      "type": "object",
+                      "description": "The user who created the project.",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "description": "The creator's human-readable display name."
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The creator's email address."
+                        },
+                        "photoURL": {
+                          "type": "string",
+                          "description": "A download URL for the creator's profile picture."
+                        },
+                        "uid": {
+                          "type": "string",
+                          "description": "The creator's unique user id."
+                        }
+                      }
+                    },
+                    "size": {
+                      "type": "number",
+                      "description": "The total size in bytes of all files contained within the project."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the project was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the project was last modified, in milliseconds since the Unix epoch."
+                    },
+                    "upload": {
+                      "type": "object",
+                      "description": "The project's upload portal configuration.",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether the public upload portal is enabled."
+                        },
+                        "header": {
+                          "type": "string",
+                          "description": "The upload portal title."
+                        },
+                        "greeting": {
+                          "type": "string",
+                          "description": "The upload portal subheader."
+                        },
+                        "redirect": {
+                          "type": "string",
+                          "description": "The URL users are redirected to after completing an upload."
+                        }
+                      }
+                    },
+                    "sortBy": {
+                      "type": "object",
+                      "description": "The default file sort configuration for the project.",
+                      "properties": {
+                        "criterion": {
+                          "type": "string",
+                          "description": "The attribute files are sorted by."
+                        },
+                        "ascending": {
+                          "type": "boolean",
+                          "description": "Whether files are sorted in ascending order."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "mSg4Nu5vAch9pkCEcgDP",
+                  "object": "project",
+                  "name": "Album Mixes — Q4",
+                  "artwork": "https://media.samply.app/artwork/9f2a.jpg",
+                  "color": "#a259ff",
+                  "creator": {
+                    "displayName": "Alex Rivera",
+                    "email": "alex@studio.com",
+                    "photoURL": "https://media.samply.app/users/alex.jpg",
+                    "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+                  },
+                  "size": 524288000,
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427,
+                  "upload": {
+                    "enabled": true,
+                    "header": "Send us your stems",
+                    "greeting": "Upload your files below",
+                    "redirect": "https://studio.com/thanks"
+                  },
+                  "sortBy": {
+                    "criterion": "name",
+                    "ascending": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a project",
+        "description": "Update an existing Samply project's name and upload portal settings. Updates an existing project and returns the updated project object. You can modify the project name and upload portal settings. To manage collaborators after creation, use the in-app settings.",
+        "operationId": "updateProject",
+        "tags": [
+          "Projects"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A new human-readable title for the project."
+                  },
+                  "upload": {
+                    "type": "object",
+                    "description": "Updated options for the project's public upload portal.",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enable or disable the public upload portal."
+                      },
+                      "header": {
+                        "type": "string",
+                        "description": "The title displayed at the top of the upload portal."
+                      },
+                      "greeting": {
+                        "type": "string",
+                        "description": "A subheader or welcome message displayed on the upload portal."
+                      },
+                      "redirect": {
+                        "type": "string",
+                        "description": "A URL to redirect the user to after their upload completes."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated project object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique project id."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The human-readable title of the project."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"project\"`."
+                    },
+                    "artwork": {
+                      "type": "string",
+                      "description": "A download URL for the project's cover artwork."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The project's display color in hex format (e.g. `#a259ff`)."
+                    },
+                    "creator": {
+                      "type": "object",
+                      "description": "The user who created the project.",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "description": "The creator's human-readable display name."
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The creator's email address."
+                        },
+                        "photoURL": {
+                          "type": "string",
+                          "description": "A download URL for the creator's profile picture."
+                        },
+                        "uid": {
+                          "type": "string",
+                          "description": "The creator's unique user id."
+                        }
+                      }
+                    },
+                    "size": {
+                      "type": "number",
+                      "description": "The total size in bytes of all files contained within the project."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the project was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the project was last modified, in milliseconds since the Unix epoch."
+                    },
+                    "upload": {
+                      "type": "object",
+                      "description": "The project's upload portal configuration.",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether the public upload portal is enabled."
+                        },
+                        "header": {
+                          "type": "string",
+                          "description": "The upload portal title."
+                        },
+                        "greeting": {
+                          "type": "string",
+                          "description": "The upload portal subheader."
+                        },
+                        "redirect": {
+                          "type": "string",
+                          "description": "The URL users are redirected to after completing an upload."
+                        }
+                      }
+                    },
+                    "sortBy": {
+                      "type": "object",
+                      "description": "The default file sort configuration for the project.",
+                      "properties": {
+                        "criterion": {
+                          "type": "string",
+                          "description": "The attribute files are sorted by."
+                        },
+                        "ascending": {
+                          "type": "boolean",
+                          "description": "Whether files are sorted in ascending order."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "mSg4Nu5vAch9pkCEcgDP",
+                  "object": "project",
+                  "name": "Album Mixes — Q4",
+                  "artwork": "https://media.samply.app/artwork/9f2a.jpg",
+                  "color": "#a259ff",
+                  "creator": {
+                    "displayName": "Alex Rivera",
+                    "email": "alex@studio.com",
+                    "photoURL": "https://media.samply.app/users/alex.jpg",
+                    "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+                  },
+                  "size": 524288000,
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427,
+                  "upload": {
+                    "enabled": true,
+                    "header": "Send us your stems",
+                    "greeting": "Upload your files below",
+                    "redirect": "https://studio.com/thanks"
+                  },
+                  "sortBy": {
+                    "criterion": "name",
+                    "ascending": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/files": {
+      "post": {
+        "summary": "Upload a file",
+        "description": "Upload an audio file to a Samply project in two steps — request a signed URL, then PUT the file to cloud storage. Uploading a file is a two-step process. First, you request a signed upload URL from Samply. Then, you PUT the file directly to that URL along with metadata from the response. This keeps large file transfers fast and efficient without routing them through Samply's servers. The playground above covers step 1 only — requesting the signed upload URL. The actual file transfer in step 2 is a PUT directly to that returned URL.",
+        "operationId": "uploadFile",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project to upload into.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The filename as reported by the `name` property on the [File](https://developer.mozilla.org/en-US/docs/Web/API/File) object."
+                  },
+                  "mimeType": {
+                    "type": "string",
+                    "description": "The MIME type of the file, as reported by the `type` property on the File object (e.g. `\"audio/wav\"`)."
+                  },
+                  "size": {
+                    "type": [
+                      "number",
+                      "string"
+                    ],
+                    "description": "The size of the file in bytes, as reported by the `size` property on the File object."
+                  },
+                  "parentid": {
+                    "type": "string",
+                    "description": "The id of an existing folder or stack within the project to upload this file into."
+                  }
+                },
+                "required": [
+                  "name",
+                  "mimeType",
+                  "size"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed upload URL and metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The signed URL to PUT the file to in the next step."
+                    },
+                    "boxid": {
+                      "type": "string",
+                      "description": "The id of the asset being uploaded."
+                    },
+                    "stackid": {
+                      "type": "string",
+                      "description": "The id of the stack the file will be uploaded to."
+                    },
+                    "contentType": {
+                      "type": "string",
+                      "description": "The content type confirmed by the server — use this as the `Content-Type` header in your PUT request."
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Upload metadata required as headers on the PUT request.",
+                      "properties": {
+                        "boxpath": {
+                          "type": "string",
+                          "description": "Required metadata value for the upload request."
+                        },
+                        "destination": {
+                          "type": "string",
+                          "description": "Required metadata value for the upload request."
+                        },
+                        "projectid": {
+                          "type": "string",
+                          "description": "The project id the file will be uploaded to."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://storage.googleapis.com/samply-uploads/...signed...",
+                  "boxid": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                  "stackid": "7a1e9d22-5b6c-4a2f-9c3d-1e2f3a4b5c6d",
+                  "contentType": "audio/wav",
+                  "metadata": {
+                    "boxpath": "projects/mSg4Nu5vAch9pkCEcgDP/boxes/cd01f0c1",
+                    "destination": "uploads/mSg4Nu5vAch9pkCEcgDP/cd01f0c1.wav",
+                    "projectid": "mSg4Nu5vAch9pkCEcgDP"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/files/{fileid}": {
+      "get": {
+        "summary": "Get a file",
+        "description": "Retrieve a Samply file, folder, or stack by id, including the box object schema. Returns a box object for the specified file, folder, or stack.",
+        "operationId": "getFile",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the file, folder, or stack.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested box object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique box id."
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "file",
+                        "folder",
+                        "stack"
+                      ],
+                      "description": "The type of box."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the box."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The box color in hex format."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the box was created, in milliseconds since the Unix epoch."
+                    },
+                    "children": {
+                      "type": "array",
+                      "description": "Present on folders and stacks — an array of child boxes.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The child box's id."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The child box's display name."
+                          }
+                        }
+                      }
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                  "object": "file",
+                  "name": "Mystery Machine.wav",
+                  "color": "#a259ff",
+                  "timeCreated": 1750041281427,
+                  "duration": 213.46
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested box not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested box not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a file",
+        "description": "Rename a Samply file, folder, or stack, or add and remove children from folders and stacks. Updates an existing file, folder, or stack and returns the updated box object.",
+        "operationId": "updateFile",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the file, folder, or stack.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A new display name for the file, folder, or stack."
+                  },
+                  "addids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of child box ids to add to a folder or stack."
+                  },
+                  "removeids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of child box ids to remove from a folder or stack."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated box object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique box id."
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "file",
+                        "folder",
+                        "stack"
+                      ],
+                      "description": "The type of box."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the box."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The box color in hex format."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the box was created, in milliseconds since the Unix epoch."
+                    },
+                    "children": {
+                      "type": "array",
+                      "description": "Present on folders and stacks — an array of child boxes.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The child box's id."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The child box's display name."
+                          }
+                        }
+                      }
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                  "object": "file",
+                  "name": "Mystery Machine.wav",
+                  "color": "#a259ff",
+                  "timeCreated": 1750041281427,
+                  "duration": 213.46
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested box not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested box not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a file",
+        "description": "Delete a Samply file by id. Deletes a file by id and returns an empty object with a `200` status on success. If the file you delete is the only version within a stack, the parent stack will also be deleted automatically.",
+        "operationId": "deleteFile",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the file to delete.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object with a 200 status on success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested box not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested box not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/files/{fileid}/download": {
+      "get": {
+        "summary": "Download a file",
+        "description": "Get a temporary download URL for a Samply file. Returns a temporary download URL for the specified file.",
+        "operationId": "downloadFile",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the file to download.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A temporary download URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "A temporary, signed download URL for the file."
+                    },
+                    "expires": {
+                      "type": "number",
+                      "description": "The time the download URL expires, in milliseconds since the Unix epoch."
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://storage.googleapis.com/samply-files/...signed...",
+                  "expires": 1750041281427
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Asset does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Asset does not exist"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/all": {
+      "get": {
+        "summary": "List all files",
+        "description": "Retrieve every file, folder, and stack within a Samply project. Returns an array of all box objects within a project, including files, folders, and stacks. Hidden boxes are excluded.",
+        "operationId": "listAllFiles",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all box objects within the project.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique box id."
+                      },
+                      "object": {
+                        "type": "string",
+                        "enum": [
+                          "file",
+                          "folder",
+                          "stack"
+                        ],
+                        "description": "The type of box."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The display name of the box."
+                      },
+                      "color": {
+                        "type": "string",
+                        "description": "The box color in hex format."
+                      },
+                      "timeCreated": {
+                        "type": "number",
+                        "description": "The time the box was created, in milliseconds since the Unix epoch."
+                      },
+                      "children": {
+                        "type": "array",
+                        "description": "Present on folders and stacks — an array of child boxes.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The child box's id."
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "The child box's display name."
+                            }
+                          }
+                        }
+                      },
+                      "duration": {
+                        "type": "number",
+                        "description": "The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                    "object": "file",
+                    "name": "Mystery Machine.wav",
+                    "color": "#a259ff",
+                    "timeCreated": 1750041281427,
+                    "duration": 213.46
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/folders": {
+      "post": {
+        "summary": "Create a folder",
+        "description": "Create a folder to organize files within a Samply project. Folders are organizational containers that can hold files and other folders within a project. Creates a folder within a project and returns a box object with `object: \"folder\"`.",
+        "operationId": "createFolder",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The display name for the folder."
+                  },
+                  "color": {
+                    "type": "string",
+                    "description": "The folder color in hex format (e.g. `#ff0000`)."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A box object with object: \"folder\".",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique box id."
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "file",
+                        "folder",
+                        "stack"
+                      ],
+                      "description": "The type of box."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the box."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The box color in hex format."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the box was created, in milliseconds since the Unix epoch."
+                    },
+                    "children": {
+                      "type": "array",
+                      "description": "Present on folders and stacks — an array of child boxes.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The child box's id."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The child box's display name."
+                          }
+                        }
+                      }
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "9b2f1c77-2c3a-4f0e-8a1b-2d4e6f8a0c11",
+                  "object": "folder",
+                  "name": "Reference Tracks",
+                  "color": "#ff0000",
+                  "timeCreated": 1750041281427,
+                  "children": [
+                    {
+                      "id": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                      "name": "Mystery Machine.wav"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List folders",
+        "description": "Retrieve all folders within a Samply project. Returns an array of folder box objects within the project.",
+        "operationId": "listFolders",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of folder box objects within the project.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique box id."
+                      },
+                      "object": {
+                        "type": "string",
+                        "enum": [
+                          "file",
+                          "folder",
+                          "stack"
+                        ],
+                        "description": "The type of box."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The display name of the box."
+                      },
+                      "color": {
+                        "type": "string",
+                        "description": "The box color in hex format."
+                      },
+                      "timeCreated": {
+                        "type": "number",
+                        "description": "The time the box was created, in milliseconds since the Unix epoch."
+                      },
+                      "children": {
+                        "type": "array",
+                        "description": "Present on folders and stacks — an array of child boxes.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The child box's id."
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "The child box's display name."
+                            }
+                          }
+                        }
+                      },
+                      "duration": {
+                        "type": "number",
+                        "description": "The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "9b2f1c77-2c3a-4f0e-8a1b-2d4e6f8a0c11",
+                    "object": "folder",
+                    "name": "Reference Tracks",
+                    "color": "#ff0000",
+                    "timeCreated": 1750041281427,
+                    "children": [
+                      {
+                        "id": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                        "name": "Mystery Machine.wav"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/stacks": {
+      "post": {
+        "summary": "Create a stack",
+        "description": "Group multiple versions of a file together into a Samply stack. Stacks group multiple versions of the same file together. Each child in a stack represents a different version of the audio. Creates a stack within a project and returns a box object with `object: \"stack\"`.",
+        "operationId": "createStack",
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the project.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The display name for the stack."
+                  },
+                  "childids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An ordered array of existing file box ids to group into this stack."
+                  }
+                },
+                "required": [
+                  "name",
+                  "childids"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A box object with object: \"stack\".",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique box id."
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "file",
+                        "folder",
+                        "stack"
+                      ],
+                      "description": "The type of box."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the box."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The box color in hex format."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the box was created, in milliseconds since the Unix epoch."
+                    },
+                    "children": {
+                      "type": "array",
+                      "description": "Present on folders and stacks — an array of child boxes.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The child box's id."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The child box's display name."
+                          }
+                        }
+                      }
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "The duration of the audio file in seconds, rounded to the nearest hundredth. Only present on audio file boxes."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "7a1e9d22-5b6c-4a2f-9c3d-1e2f3a4b5c6d",
+                  "object": "stack",
+                  "name": "Lead Vocal",
+                  "color": "#a259ff",
+                  "timeCreated": 1750041281427,
+                  "children": [
+                    {
+                      "id": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+                      "name": "Lead Vocal v1.wav"
+                    },
+                    {
+                      "id": "de12f1d2-a2b3-4c5d-6e7f-8a9b0c1d2e3f",
+                      "name": "Lead Vocal v2.wav"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested project not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/players": {
+      "post": {
+        "summary": "Create a player",
+        "description": "Create a shareable Samply player with control over playback quality, downloads, comments, paywalls, and access.\n\nCreates a new player and returns a player object. If you don't provide a `projectid`, Samply will create a new project for the player automatically.\n\nIn the Samply app, players are referred to as **Links**. They are the same thing. When you create or manage links through the API, you work with the `/players` endpoints.",
+        "operationId": "createPlayer",
+        "tags": [
+          "Players"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A human-readable title for the player."
+                  },
+                  "projectid": {
+                    "type": "string",
+                    "description": "The id of an existing project to create the player for. When provided, no new project is created."
+                  },
+                  "folderid": {
+                    "type": "string",
+                    "description": "The id of a folder within the project to scope this player to. Requires `projectid`."
+                  },
+                  "boxids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of specific file ids within the project to include in this player. Requires `projectid`. Cannot be used alongside `folderid`."
+                  },
+                  "public": {
+                    "type": "boolean",
+                    "description": "Whether the player link is publicly accessible. Defaults to the creator's in-app preference, then falls back to `true`."
+                  },
+                  "upload": {
+                    "type": "object",
+                    "description": "Options for a public upload portal attached to this player's project.",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enable the public upload portal for this project."
+                      },
+                      "header": {
+                        "type": "string",
+                        "description": "The title displayed at the top of the upload portal."
+                      },
+                      "greeting": {
+                        "type": "string",
+                        "description": "A subheader or welcome message displayed on the upload portal."
+                      },
+                      "redirect": {
+                        "type": "string",
+                        "description": "A URL to redirect the user to after their upload completes."
+                      }
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "description": "Playback and display configuration for the player.",
+                    "properties": {
+                      "quality": {
+                        "type": "string",
+                        "enum": [
+                          "original",
+                          "compressed",
+                          "lossless"
+                        ],
+                        "description": "Default audio playback quality. If not set, Samply uses the creator's default preference. When undefined, the player automatically selects the highest quality the listener's connection supports."
+                      },
+                      "metadata": {
+                        "type": "boolean",
+                        "description": "Whether to show file metadata in the player. Defaults to `false` if no preference is set."
+                      },
+                      "isrc": {
+                        "type": "boolean",
+                        "description": "Whether to show ISRC codes in the player if the uploaded files include them. Defaults to `false` if no preference is set."
+                      },
+                      "downloads": {
+                        "type": "boolean",
+                        "description": "Whether to allow listeners to download files. Defaults to `true` if no preference is set."
+                      },
+                      "comments": {
+                        "type": "boolean",
+                        "description": "Whether to allow listeners to post comments. Defaults to `true` if no preference is set."
+                      },
+                      "loudnessMatch": {
+                        "type": "boolean",
+                        "description": "Whether to enable loudness matching during playback. Defaults to `false` if no preference is set."
+                      },
+                      "targetLufs": {
+                        "type": "number",
+                        "description": "The target LUFS value when loudness matching is enabled."
+                      },
+                      "loudnessPlatform": {
+                        "type": "string",
+                        "enum": [
+                          "amazon-music",
+                          "apple-music",
+                          "deezer",
+                          "spotify",
+                          "tidal",
+                          "youtube"
+                        ],
+                        "description": "A streaming platform preset to use as the loudness target."
+                      },
+                      "studio": {
+                        "type": "boolean",
+                        "description": "Whether to enable studio branding, if the creator has configured it. Defaults to `false` if no preference is set."
+                      },
+                      "stacks": {
+                        "type": "boolean",
+                        "description": "Whether all versions in a stack are available to listeners. When `false`, only the most recent version is shown. Defaults to `false` if no preference is set."
+                      },
+                      "samplyCTA": {
+                        "type": "boolean",
+                        "description": "Whether to show the Samply call-to-action popup after a listener downloads files. Defaults to `true` if no preference is set."
+                      },
+                      "boxSubtitle": {
+                        "type": "string",
+                        "enum": [
+                          "artist",
+                          "timestamp",
+                          "none"
+                        ],
+                        "description": "What to display below each track in the player. `\"artist\"` shows the metadata artist (falling back to the uploader's name). Defaults to `\"artist\"`."
+                      }
+                    }
+                  },
+                  "payment": {
+                    "type": "object",
+                    "description": "Paywall configuration for the player. Your Stripe integration must be set up in Samply before using this field.",
+                    "properties": {
+                      "price": {
+                        "type": "number",
+                        "description": "The paywall price in cents."
+                      },
+                      "fulfillment": {
+                        "type": "string",
+                        "enum": [
+                          "allow-download",
+                          "allow-access"
+                        ],
+                        "description": "The action unlocked after a listener pays. `\"allow-download\"` enables downloads; `\"allow-access\"` enables viewing access."
+                      },
+                      "recipient": {
+                        "type": "string",
+                        "enum": [
+                          "everyone",
+                          "customer"
+                        ],
+                        "description": "Who gains access after a payment. `\"everyone\"` unlocks the player for all users once one person pays. `\"customer\"` only unlocks it for the paying user."
+                      }
+                    }
+                  },
+                  "collaborators": {
+                    "type": "array",
+                    "description": "An array of collaborators to invite to the player.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "description": "The collaborator's email address."
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "admin",
+                            "editor",
+                            "viewer"
+                          ],
+                          "description": "The permission level to grant this collaborator."
+                        }
+                      },
+                      "required": [
+                        "email",
+                        "role"
+                      ]
+                    }
+                  },
+                  "sortBy": {
+                    "type": "object",
+                    "description": "Default sort order for files within the player.",
+                    "properties": {
+                      "criterion": {
+                        "type": "string",
+                        "enum": [
+                          "custom",
+                          "name",
+                          "duration",
+                          "size",
+                          "bitDepth",
+                          "sampleRate",
+                          "bitRate",
+                          "channels",
+                          "lufs",
+                          "timeModified",
+                          "timeCreated",
+                          "kind"
+                        ],
+                        "description": "The attribute to sort files by."
+                      },
+                      "ascending": {
+                        "type": "boolean",
+                        "description": "Set to `true` to sort in ascending order."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique player id."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The human-readable title of the player."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"player\"`."
+                    },
+                    "projectid": {
+                      "type": "string",
+                      "description": "The id of the project this player is linked to."
+                    },
+                    "folderid": {
+                      "type": "string",
+                      "description": "The id of the folder this player is scoped to, if applicable."
+                    },
+                    "boxids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The array of specific file ids included in this player, if scoped to individual files."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The player's display color in hex format."
+                    },
+                    "public": {
+                      "type": "boolean",
+                      "description": "Whether the player link is publicly accessible."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the player was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the player was last modified, in milliseconds since the Unix epoch."
+                    },
+                    "options": {
+                      "type": "object",
+                      "description": "The player's full configuration options.",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "description": "Default audio playback quality: `\"original\"`, `\"compressed\"`, or `\"lossless\"`."
+                        },
+                        "metadata": {
+                          "type": "boolean",
+                          "description": "Whether file metadata is shown in the player."
+                        },
+                        "isrc": {
+                          "type": "boolean",
+                          "description": "Whether ISRC codes are shown in the player."
+                        },
+                        "downloads": {
+                          "type": "boolean",
+                          "description": "Whether listeners can download files."
+                        },
+                        "comments": {
+                          "type": "boolean",
+                          "description": "Whether listeners can post comments."
+                        },
+                        "loudnessMatch": {
+                          "type": "boolean",
+                          "description": "Whether loudness matching is enabled."
+                        },
+                        "targetLufs": {
+                          "type": "number",
+                          "description": "The target LUFS value for loudness matching."
+                        },
+                        "loudnessPlatform": {
+                          "type": "string",
+                          "description": "The streaming platform loudness preset in use."
+                        },
+                        "studio": {
+                          "type": "boolean",
+                          "description": "Whether studio branding is enabled."
+                        },
+                        "stacks": {
+                          "type": "boolean",
+                          "description": "Whether all stack versions are available to listeners."
+                        },
+                        "samplyCTA": {
+                          "type": "boolean",
+                          "description": "Whether the Samply call-to-action is shown after downloads."
+                        },
+                        "boxSubtitle": {
+                          "type": "string",
+                          "description": "What is displayed below each track: `\"artist\"`, `\"timestamp\"`, or `\"none\"`."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "uDXE192QibaDfK51eTTN",
+                  "object": "player",
+                  "name": "Final Mixes",
+                  "projectid": "mSg4Nu5vAch9pkCEcgDP",
+                  "color": "#a259ff",
+                  "public": false,
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427,
+                  "options": {
+                    "quality": "lossless",
+                    "metadata": false,
+                    "isrc": false,
+                    "downloads": false,
+                    "comments": true,
+                    "loudnessMatch": false,
+                    "studio": false,
+                    "stacks": true,
+                    "samplyCTA": true,
+                    "boxSubtitle": "artist"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List players",
+        "description": "Retrieve all Samply players (links) that you own.\n\nReturns an array of all player objects that you own.",
+        "operationId": "listPlayers",
+        "tags": [
+          "Players"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique player id."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The human-readable title of the player."
+                      },
+                      "object": {
+                        "type": "string",
+                        "description": "Always `\"player\"`."
+                      },
+                      "projectid": {
+                        "type": "string",
+                        "description": "The id of the project this player is linked to."
+                      },
+                      "folderid": {
+                        "type": "string",
+                        "description": "The id of the folder this player is scoped to, if applicable."
+                      },
+                      "boxids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The array of specific file ids included in this player, if scoped to individual files."
+                      },
+                      "color": {
+                        "type": "string",
+                        "description": "The player's display color in hex format."
+                      },
+                      "public": {
+                        "type": "boolean",
+                        "description": "Whether the player link is publicly accessible."
+                      },
+                      "timeCreated": {
+                        "type": "number",
+                        "description": "The time the player was created, in milliseconds since the Unix epoch."
+                      },
+                      "timeModified": {
+                        "type": "number",
+                        "description": "The time the player was last modified, in milliseconds since the Unix epoch."
+                      },
+                      "options": {
+                        "type": "object",
+                        "description": "The player's full configuration options.",
+                        "properties": {
+                          "quality": {
+                            "type": "string",
+                            "description": "Default audio playback quality: `\"original\"`, `\"compressed\"`, or `\"lossless\"`."
+                          },
+                          "metadata": {
+                            "type": "boolean",
+                            "description": "Whether file metadata is shown in the player."
+                          },
+                          "isrc": {
+                            "type": "boolean",
+                            "description": "Whether ISRC codes are shown in the player."
+                          },
+                          "downloads": {
+                            "type": "boolean",
+                            "description": "Whether listeners can download files."
+                          },
+                          "comments": {
+                            "type": "boolean",
+                            "description": "Whether listeners can post comments."
+                          },
+                          "loudnessMatch": {
+                            "type": "boolean",
+                            "description": "Whether loudness matching is enabled."
+                          },
+                          "targetLufs": {
+                            "type": "number",
+                            "description": "The target LUFS value for loudness matching."
+                          },
+                          "loudnessPlatform": {
+                            "type": "string",
+                            "description": "The streaming platform loudness preset in use."
+                          },
+                          "studio": {
+                            "type": "boolean",
+                            "description": "Whether studio branding is enabled."
+                          },
+                          "stacks": {
+                            "type": "boolean",
+                            "description": "Whether all stack versions are available to listeners."
+                          },
+                          "samplyCTA": {
+                            "type": "boolean",
+                            "description": "Whether the Samply call-to-action is shown after downloads."
+                          },
+                          "boxSubtitle": {
+                            "type": "string",
+                            "description": "What is displayed below each track: `\"artist\"`, `\"timestamp\"`, or `\"none\"`."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "uDXE192QibaDfK51eTTN",
+                    "object": "player",
+                    "name": "Final Mixes",
+                    "projectid": "mSg4Nu5vAch9pkCEcgDP",
+                    "color": "#a259ff",
+                    "public": false,
+                    "timeCreated": 1750041281427,
+                    "timeModified": 1750041281427,
+                    "options": {
+                      "quality": "lossless",
+                      "metadata": false,
+                      "isrc": false,
+                      "downloads": false,
+                      "comments": true,
+                      "loudnessMatch": false,
+                      "studio": false,
+                      "stacks": true,
+                      "samplyCTA": true,
+                      "boxSubtitle": "artist"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/players/{playerid}": {
+      "get": {
+        "summary": "Get a player",
+        "description": "Retrieve a single Samply player by its id, including its full configuration and the player object schema.\n\nReturns a single player object for the given player id.",
+        "operationId": "getPlayer",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "name": "playerid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the player.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique player id."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The human-readable title of the player."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"player\"`."
+                    },
+                    "projectid": {
+                      "type": "string",
+                      "description": "The id of the project this player is linked to."
+                    },
+                    "folderid": {
+                      "type": "string",
+                      "description": "The id of the folder this player is scoped to, if applicable."
+                    },
+                    "boxids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The array of specific file ids included in this player, if scoped to individual files."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The player's display color in hex format."
+                    },
+                    "public": {
+                      "type": "boolean",
+                      "description": "Whether the player link is publicly accessible."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the player was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the player was last modified, in milliseconds since the Unix epoch."
+                    },
+                    "options": {
+                      "type": "object",
+                      "description": "The player's full configuration options.",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "description": "Default audio playback quality: `\"original\"`, `\"compressed\"`, or `\"lossless\"`."
+                        },
+                        "metadata": {
+                          "type": "boolean",
+                          "description": "Whether file metadata is shown in the player."
+                        },
+                        "isrc": {
+                          "type": "boolean",
+                          "description": "Whether ISRC codes are shown in the player."
+                        },
+                        "downloads": {
+                          "type": "boolean",
+                          "description": "Whether listeners can download files."
+                        },
+                        "comments": {
+                          "type": "boolean",
+                          "description": "Whether listeners can post comments."
+                        },
+                        "loudnessMatch": {
+                          "type": "boolean",
+                          "description": "Whether loudness matching is enabled."
+                        },
+                        "targetLufs": {
+                          "type": "number",
+                          "description": "The target LUFS value for loudness matching."
+                        },
+                        "loudnessPlatform": {
+                          "type": "string",
+                          "description": "The streaming platform loudness preset in use."
+                        },
+                        "studio": {
+                          "type": "boolean",
+                          "description": "Whether studio branding is enabled."
+                        },
+                        "stacks": {
+                          "type": "boolean",
+                          "description": "Whether all stack versions are available to listeners."
+                        },
+                        "samplyCTA": {
+                          "type": "boolean",
+                          "description": "Whether the Samply call-to-action is shown after downloads."
+                        },
+                        "boxSubtitle": {
+                          "type": "string",
+                          "description": "What is displayed below each track: `\"artist\"`, `\"timestamp\"`, or `\"none\"`."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "uDXE192QibaDfK51eTTN",
+                  "object": "player",
+                  "name": "Final Mixes",
+                  "projectid": "mSg4Nu5vAch9pkCEcgDP",
+                  "color": "#a259ff",
+                  "public": false,
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427,
+                  "options": {
+                    "quality": "lossless",
+                    "metadata": false,
+                    "isrc": false,
+                    "downloads": false,
+                    "comments": true,
+                    "loudnessMatch": false,
+                    "studio": false,
+                    "stacks": true,
+                    "samplyCTA": true,
+                    "boxSubtitle": "artist"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested player not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a player",
+        "description": "Update an existing Samply player's name, visibility, options, and paywall configuration.\n\nUpdates an existing player and returns the updated player object. You can modify the player name, visibility, options, and payment configuration.",
+        "operationId": "updatePlayer",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "name": "playerid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the player.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A new human-readable title for the player."
+                  },
+                  "public": {
+                    "type": "boolean",
+                    "description": "Whether the player link is publicly accessible."
+                  },
+                  "options": {
+                    "type": "object",
+                    "description": "Updated playback and display configuration. Accepts the same fields as the create endpoint's `options` object.",
+                    "properties": {
+                      "quality": {
+                        "type": "string",
+                        "enum": [
+                          "original",
+                          "compressed",
+                          "lossless"
+                        ],
+                        "description": "Default audio playback quality. If not set, Samply uses the creator's default preference. When undefined, the player automatically selects the highest quality the listener's connection supports."
+                      },
+                      "metadata": {
+                        "type": "boolean",
+                        "description": "Whether to show file metadata in the player. Defaults to `false` if no preference is set."
+                      },
+                      "isrc": {
+                        "type": "boolean",
+                        "description": "Whether to show ISRC codes in the player if the uploaded files include them. Defaults to `false` if no preference is set."
+                      },
+                      "downloads": {
+                        "type": "boolean",
+                        "description": "Whether to allow listeners to download files. Defaults to `true` if no preference is set."
+                      },
+                      "comments": {
+                        "type": "boolean",
+                        "description": "Whether to allow listeners to post comments. Defaults to `true` if no preference is set."
+                      },
+                      "loudnessMatch": {
+                        "type": "boolean",
+                        "description": "Whether to enable loudness matching during playback. Defaults to `false` if no preference is set."
+                      },
+                      "targetLufs": {
+                        "type": "number",
+                        "description": "The target LUFS value when loudness matching is enabled."
+                      },
+                      "loudnessPlatform": {
+                        "type": "string",
+                        "enum": [
+                          "amazon-music",
+                          "apple-music",
+                          "deezer",
+                          "spotify",
+                          "tidal",
+                          "youtube"
+                        ],
+                        "description": "A streaming platform preset to use as the loudness target."
+                      },
+                      "studio": {
+                        "type": "boolean",
+                        "description": "Whether to enable studio branding, if the creator has configured it. Defaults to `false` if no preference is set."
+                      },
+                      "stacks": {
+                        "type": "boolean",
+                        "description": "Whether all versions in a stack are available to listeners. When `false`, only the most recent version is shown. Defaults to `false` if no preference is set."
+                      },
+                      "samplyCTA": {
+                        "type": "boolean",
+                        "description": "Whether to show the Samply call-to-action popup after a listener downloads files. Defaults to `true` if no preference is set."
+                      },
+                      "boxSubtitle": {
+                        "type": "string",
+                        "enum": [
+                          "artist",
+                          "timestamp",
+                          "none"
+                        ],
+                        "description": "What to display below each track in the player. `\"artist\"` shows the metadata artist (falling back to the uploader's name). Defaults to `\"artist\"`."
+                      }
+                    }
+                  },
+                  "payment": {
+                    "type": "object",
+                    "description": "Updated paywall configuration. Accepts the same fields as the create endpoint's `payment` object.",
+                    "properties": {
+                      "price": {
+                        "type": "number",
+                        "description": "The paywall price in cents."
+                      },
+                      "fulfillment": {
+                        "type": "string",
+                        "enum": [
+                          "allow-download",
+                          "allow-access"
+                        ],
+                        "description": "The action unlocked after a listener pays. `\"allow-download\"` enables downloads; `\"allow-access\"` enables viewing access."
+                      },
+                      "recipient": {
+                        "type": "string",
+                        "enum": [
+                          "everyone",
+                          "customer"
+                        ],
+                        "description": "Who gains access after a payment. `\"everyone\"` unlocks the player for all users once one person pays. `\"customer\"` only unlocks it for the paying user."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique player id."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The human-readable title of the player."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"player\"`."
+                    },
+                    "projectid": {
+                      "type": "string",
+                      "description": "The id of the project this player is linked to."
+                    },
+                    "folderid": {
+                      "type": "string",
+                      "description": "The id of the folder this player is scoped to, if applicable."
+                    },
+                    "boxids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The array of specific file ids included in this player, if scoped to individual files."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "The player's display color in hex format."
+                    },
+                    "public": {
+                      "type": "boolean",
+                      "description": "Whether the player link is publicly accessible."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the player was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the player was last modified, in milliseconds since the Unix epoch."
+                    },
+                    "options": {
+                      "type": "object",
+                      "description": "The player's full configuration options.",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "description": "Default audio playback quality: `\"original\"`, `\"compressed\"`, or `\"lossless\"`."
+                        },
+                        "metadata": {
+                          "type": "boolean",
+                          "description": "Whether file metadata is shown in the player."
+                        },
+                        "isrc": {
+                          "type": "boolean",
+                          "description": "Whether ISRC codes are shown in the player."
+                        },
+                        "downloads": {
+                          "type": "boolean",
+                          "description": "Whether listeners can download files."
+                        },
+                        "comments": {
+                          "type": "boolean",
+                          "description": "Whether listeners can post comments."
+                        },
+                        "loudnessMatch": {
+                          "type": "boolean",
+                          "description": "Whether loudness matching is enabled."
+                        },
+                        "targetLufs": {
+                          "type": "number",
+                          "description": "The target LUFS value for loudness matching."
+                        },
+                        "loudnessPlatform": {
+                          "type": "string",
+                          "description": "The streaming platform loudness preset in use."
+                        },
+                        "studio": {
+                          "type": "boolean",
+                          "description": "Whether studio branding is enabled."
+                        },
+                        "stacks": {
+                          "type": "boolean",
+                          "description": "Whether all stack versions are available to listeners."
+                        },
+                        "samplyCTA": {
+                          "type": "boolean",
+                          "description": "Whether the Samply call-to-action is shown after downloads."
+                        },
+                        "boxSubtitle": {
+                          "type": "string",
+                          "description": "What is displayed below each track: `\"artist\"`, `\"timestamp\"`, or `\"none\"`."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "uDXE192QibaDfK51eTTN",
+                  "object": "player",
+                  "name": "Final Mixes",
+                  "projectid": "mSg4Nu5vAch9pkCEcgDP",
+                  "color": "#a259ff",
+                  "public": false,
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427,
+                  "options": {
+                    "quality": "lossless",
+                    "metadata": false,
+                    "isrc": false,
+                    "downloads": false,
+                    "comments": true,
+                    "loudnessMatch": false,
+                    "studio": false,
+                    "stacks": true,
+                    "samplyCTA": true,
+                    "boxSubtitle": "artist"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested player not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectid}/files/{fileid}/comments": {
+      "post": {
+        "summary": "Create a comment",
+        "description": "Creates a new comment on the specified file and returns a comment object.",
+        "operationId": "createComment",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique id of the project."
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id of the specific file version. Must not be a stack id."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The markdown text content of the comment. Best practice is to wrap your message in paragraph tags, e.g. `<p>Sounds great here.</p>`."
+                  },
+                  "audioTimestamp": {
+                    "type": "number",
+                    "description": "The comment's start time in seconds. Use this to attach the comment to a specific moment in the track. For a single point (not a range), only this field needs to be set."
+                  },
+                  "audioTimestampEnd": {
+                    "type": "number",
+                    "description": "The comment's end time in seconds. When used together with `audioTimestamp`, this creates a time range annotation. Note that replies do not display timecodes."
+                  },
+                  "parentid": {
+                    "type": "string",
+                    "description": "The id of the parent comment if this comment is a reply. The parent comment must not itself be a reply (replies cannot be nested)."
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "description": "Whether to mark this comment as completed immediately upon creation."
+                  },
+                  "pinned": {
+                    "type": "boolean",
+                    "description": "Whether to pin this comment so it appears prominently in the feedback view."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique comment id."
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "Always `\"comment\"`."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "The markdown text content of the comment."
+                    },
+                    "audioTimestamp": {
+                      "type": "number",
+                      "description": "The comment's start time in seconds. If the comment is not time-coded, this value will be absent."
+                    },
+                    "audioTimestampEnd": {
+                      "type": "number",
+                      "description": "The comment's end time in seconds. Present when the comment spans a time range."
+                    },
+                    "completed": {
+                      "type": "boolean",
+                      "description": "Whether this comment is marked as complete."
+                    },
+                    "creator": {
+                      "type": "object",
+                      "description": "The user who created the comment.",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "description": "The creator's human-readable display name."
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The creator's email address."
+                        },
+                        "photoURL": {
+                          "type": "string",
+                          "description": "A URL for the creator's profile picture."
+                        },
+                        "uid": {
+                          "type": "string",
+                          "description": "The creator's unique user id."
+                        }
+                      }
+                    },
+                    "isReply": {
+                      "type": "boolean",
+                      "description": "Whether this comment is a reply to another comment."
+                    },
+                    "parentid": {
+                      "type": "string",
+                      "description": "The id of the parent comment, if this comment is a reply."
+                    },
+                    "reactions": {
+                      "type": "object",
+                      "description": "A map of emoji reactions added to this comment. Each key is an emoji string and each value contains reaction details.",
+                      "properties": {
+                        "count": {
+                          "type": "number",
+                          "description": "The number of times this emoji reaction has been added."
+                        },
+                        "users": {
+                          "type": "object",
+                          "description": "A map of users who added this reaction, keyed by user id."
+                        }
+                      }
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the comment was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the comment was last modified, in milliseconds since the Unix epoch."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "uDXE192QibaDfK51eTTN",
+                  "object": "comment",
+                  "message": "<p>The kick feels a bit too loud here.</p>",
+                  "audioTimestamp": 32.5,
+                  "audioTimestampEnd": 35,
+                  "completed": false,
+                  "creator": {
+                    "displayName": "Alex Rivera",
+                    "email": "alex@studio.com",
+                    "photoURL": "https://media.samply.app/users/alex.jpg",
+                    "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+                  },
+                  "isReply": false,
+                  "reactions": {},
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List comments",
+        "description": "Returns an array of all comment objects for the specified file.",
+        "operationId": "listComments",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "name": "projectid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique id of the project."
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id of the specific file version. Must not be a stack id."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique comment id."
+                      },
+                      "object": {
+                        "type": "string",
+                        "description": "Always `\"comment\"`."
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "The markdown text content of the comment."
+                      },
+                      "audioTimestamp": {
+                        "type": "number",
+                        "description": "The comment's start time in seconds. If the comment is not time-coded, this value will be absent."
+                      },
+                      "audioTimestampEnd": {
+                        "type": "number",
+                        "description": "The comment's end time in seconds. Present when the comment spans a time range."
+                      },
+                      "completed": {
+                        "type": "boolean",
+                        "description": "Whether this comment is marked as complete."
+                      },
+                      "creator": {
+                        "type": "object",
+                        "description": "The user who created the comment.",
+                        "properties": {
+                          "displayName": {
+                            "type": "string",
+                            "description": "The creator's human-readable display name."
+                          },
+                          "email": {
+                            "type": "string",
+                            "description": "The creator's email address."
+                          },
+                          "photoURL": {
+                            "type": "string",
+                            "description": "A URL for the creator's profile picture."
+                          },
+                          "uid": {
+                            "type": "string",
+                            "description": "The creator's unique user id."
+                          }
+                        }
+                      },
+                      "isReply": {
+                        "type": "boolean",
+                        "description": "Whether this comment is a reply to another comment."
+                      },
+                      "parentid": {
+                        "type": "string",
+                        "description": "The id of the parent comment, if this comment is a reply."
+                      },
+                      "reactions": {
+                        "type": "object",
+                        "description": "A map of emoji reactions added to this comment. Each key is an emoji string and each value contains reaction details.",
+                        "properties": {
+                          "count": {
+                            "type": "number",
+                            "description": "The number of times this emoji reaction has been added."
+                          },
+                          "users": {
+                            "type": "object",
+                            "description": "A map of users who added this reaction, keyed by user id."
+                          }
+                        }
+                      },
+                      "timeCreated": {
+                        "type": "number",
+                        "description": "The time the comment was created, in milliseconds since the Unix epoch."
+                      },
+                      "timeModified": {
+                        "type": "number",
+                        "description": "The time the comment was last modified, in milliseconds since the Unix epoch."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "uDXE192QibaDfK51eTTN",
+                    "object": "comment",
+                    "message": "<p>The kick feels a bit too loud here.</p>",
+                    "audioTimestamp": 32.5,
+                    "audioTimestampEnd": 35,
+                    "completed": false,
+                    "creator": {
+                      "displayName": "Alex Rivera",
+                      "email": "alex@studio.com",
+                      "photoURL": "https://media.samply.app/users/alex.jpg",
+                      "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+                    },
+                    "isReply": false,
+                    "reactions": {},
+                    "timeCreated": 1750041281427,
+                    "timeModified": 1750041281427
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Insufficient permissions"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested project not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks": {
+      "post": {
+        "summary": "Create a webhook",
+        "description": "Creates a new webhook and returns a webhook object. Samply will immediately begin sending event payloads to your URL for the event types you subscribe to. See the [available events](/api/webhooks/events) for the full list of event types.",
+        "operationId": "createWebhook",
+        "tags": [
+          "Webhooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "url",
+                  "events"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "A name to help you identify this webhook in your Samply preferences."
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "The endpoint URL where Samply will deliver event payloads via HTTP POST."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of one or more event type strings to subscribe to. See the [available events](/api/webhooks/events)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique webhook id."
+                    },
+                    "label": {
+                      "type": "string",
+                      "description": "The human-readable name you gave this webhook."
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The array of event types this webhook is subscribed to."
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The destination URL that receives event payloads."
+                    },
+                    "timeCreated": {
+                      "type": "number",
+                      "description": "The time the webhook was created, in milliseconds since the Unix epoch."
+                    },
+                    "timeModified": {
+                      "type": "number",
+                      "description": "The time the webhook was last modified, in milliseconds since the Unix epoch."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "a459f855-da9f-4dfc-9181-35da2badfdcc",
+                  "label": "Upload notifier",
+                  "events": [
+                    "upload.completed",
+                    "comment.created"
+                  ],
+                  "url": "https://my-service.com/samply-webhook",
+                  "timeCreated": 1750041281427,
+                  "timeModified": 1750041281427
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Bad request"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/{webhookid}": {
+      "delete": {
+        "summary": "Delete a webhook",
+        "description": "Deletes the specified webhook. Samply will stop delivering payloads to its URL immediately.",
+        "operationId": "deleteWebhook",
+        "tags": [
+          "Webhooks"
+        ],
+        "parameters": [
+          {
+            "name": "webhookid",
+            "in": "path",
+            "required": true,
+            "description": "The unique id of the webhook.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object with a `200` status on success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Requested webhook not found"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

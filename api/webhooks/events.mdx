@@ -1,0 +1,66 @@
+---
+title: "Events & payloads"
+sidebarTitle: "Events & payloads"
+description: "The full list of Samply webhook event types and an example event payload."
+---
+
+When a subscribed event occurs — such as a file finishing its upload or a new comment being posted — Samply sends an HTTP POST request to your webhook URL with a JSON payload describing the event.
+
+## Available events
+
+Subscribe to any combination of the following event types when [creating a webhook](/api/webhooks/create).
+
+| Event | Description |
+|-------|-------------|
+| `player.created` | A new player is created |
+| `player.updated` | An existing player is modified |
+| `project.created` | A new project is created |
+| `project.updated` | An existing project is modified |
+| `comment.created` | A new comment is posted |
+| `upload.started` | A file begins uploading |
+| `upload.completed` | A file has finished uploading |
+| `upload.failed` | A file upload fails due to an error |
+
+## Example payload
+
+Below is a sample payload for a `comment.created` event. The `data.after` object contains the full state of the resource after the event occurred.
+
+```json
+{
+  "id": "a459f855-da9f-4dfc-9181-35da2badfdcc",
+  "type": "comment.created",
+  "object": "event",
+  "projectid": "mSg4Nu5vAch9pkCEcgDP",
+  "boxid": "cd01f0c1-f1b3-4bc9-95c3-e14e5b01fbe1",
+  "boxName": "Mystery Machine",
+  "commentid": "uDXE192QibaDfK51eTTN",
+  "data": {
+    "after": {
+      "id": "uDXE192QibaDfK51eTTN",
+      "object": "comment",
+      "message": "<p>Scooby Doo Where Are You?</p>",
+      "creator": {
+        "displayName": "eschirtz",
+        "email": null,
+        "photoURL": null,
+        "uid": "TlYYwlHzZohpleC8a2Vo1SYY1902"
+      },
+      "isReply": false,
+      "timeCreated": 1750041281427,
+      "timeModified": 1750041281427
+    }
+  },
+  "timeCreated": 1750041281427,
+  "uid": "zklUx8RcjHZTqqi4mWoQNoBMsU03"
+}
+```
+
+## Tips
+
+<Tip>
+  Test your endpoint with a tool like [Webhook.site](https://webhook.site) before pointing Samply at your production URL — you can inspect incoming payloads in real time without writing any server code.
+</Tip>
+
+<Tip>
+  Combine webhooks with [Zapier](https://zapier.com/apps/samply/integrations) or [Make](https://www.make.com) to trigger no-code automations — for example, posting a Slack message whenever an upload completes or a comment is added.
+</Tip>

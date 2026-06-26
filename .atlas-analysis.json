@@ -2,7 +2,7 @@
   "projectType": "saas",
   "projectName": "Samply",
   "projectDescription": "Samply is a professional audio sharing platform that lets creators upload, organize, and share high-fidelity tracks with clients, collaborators, and fans — with full control over access, payments, and playback quality.",
-  "theme": "almond",
+  "theme": "aspen",
   "primaryColor": "#adadad",
   "lightColor": "#ffffff",
   "darkColor": null,
@@ -15,7 +15,7 @@
             "group": "Get Started",
             "pages": [
               "introduction",
-              "quick-start",
+              "quickstart",
               "applications"
             ]
           },

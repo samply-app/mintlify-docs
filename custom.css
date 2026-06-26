@@ -1,0 +1,14 @@
+#content-area h1,
+#content-area h2,
+#content-area h3,
+#content-area h4,
+#content-area h5,
+#content-area h6,
+h1.mintlify-heading,
+h2.mintlify-heading,
+h3.mintlify-heading,
+h4.mintlify-heading,
+h5.mintlify-heading,
+h6.mintlify-heading {
+  font-weight: 540;
+}

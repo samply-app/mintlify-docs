@@ -1,13 +1,17 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Samply",
-  "theme": "mint",
+  "theme": "aspen",
+    "logo": {
+    "light": "/images/logo-dark.svg",
+    "dark": "/images/logo.svg"
+  },
   "favicon": {
     "light": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg",
     "dark": "https://media.brand.dev/dd998ec9-fc0f-407d-a14e-9e2d13466941.svg"
   },
   "colors": {
-    "primary": "#929298",
+    "primary": "#0d0d0d",
     "light": "#ffffff",
     "dark": "#0d0d0d"
   },
@@ -26,8 +30,8 @@
           {
             "group": "Get Started",
             "pages": [
-              "introduction",
-              "quick-start",
+              "index",
+              "quickstart",
               "applications"
             ]
           },
@@ -100,18 +104,63 @@
             ]
           },
           {
-            "group": "Resources",
+            "group": "Projects",
             "pages": [
-              "api/projects",
-              "api/files",
-              "api/players",
-              "api/comments",
-              "api/webhooks"
+              "api/projects/create",
+              "api/projects/list",
+              "api/projects/get",
+              "api/projects/update"
+            ]
+          },
+          {
+            "group": "Files",
+            "pages": [
+              "api/files/upload",
+              "api/files/get",
+              "api/files/update",
+              "api/files/delete",
+              "api/files/download",
+              "api/files/list",
+              "api/files/create-folder",
+              "api/files/list-folders",
+              "api/files/create-stack"
+            ]
+          },
+          {
+            "group": "Players",
+            "pages": [
+              "api/players/create",
+              "api/players/list",
+              "api/players/get",
+              "api/players/update"
+            ]
+          },
+          {
+            "group": "Comments",
+            "pages": [
+              "api/comments/create",
+              "api/comments/list"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api/webhooks/create",
+              "api/webhooks/delete",
+              "api/webhooks/events"
             ]
           }
         ]
       }
     ]
+  },
+  "api": {
+    "mdx": {
+      "server": "https://samply.app/api/v0",
+      "auth": {
+        "method": "bearer"
+      }
+    }
   },
   "fonts": {
     "family": "Inter"
@@ -149,10 +198,6 @@
         ]
       }
     ]
-  },
-  "logo": {
-    "light": "/images/logo.svg",
-    "dark": "/images/logo.svg"
   },
   "description": "Securely stream, share, and collaborate on audio from your phone and desktop with Samply."
 }

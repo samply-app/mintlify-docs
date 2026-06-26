@@ -1,66 +1,68 @@
 ---
-title: "Samply: Professional Audio Sharing for Creators"
-sidebarTitle: "Home"
-description: "Share lossless audio with clients, collaborators, and fans. Control access, collect feedback, and monetize your work — all from one place."
+title: "Introduction"
+description: "Mintlify is an AI-native documentation platform built for developers, with beautiful defaults, interactive API playgrounds, and smart search."
+mode: "frame"
+keywords: ["overview", "platform", "getting started", "features"]
+boost: 3
 ---
 
-Samply is your professional home for audio. Upload tracks in any format, organize them into projects, and share them with exactly who you want — whether that's a mix client, a collaborator across the world, or fans ready to buy. You stay in full control of who can listen, download, comment, and pay.
+export const HeroCard = ({ filename, title, description, href }) => {
+  return (
+    <a className="group cursor-pointer pb-8" href={href}>
+      <img
+        src={`/images/hero/${filename}.png`}
+        className="block dark:hidden pointer-events-none group-hover:scale-105 transition-all duration-100"
+      />
+      <img
+        src={`/images/hero/${filename}-dark.png`}
+        className="pointer-events-none group-hover:scale-105 transition-all duration-100 hidden dark:block"
+      />
+      <h3 className="mt-5 text-gray-900 dark:text-zinc-50 font-medium">
+        {title}
+      </h3>
+      <span className="mt-1.5">{description}</span>
+    </a>
+  );
+};
 
-<CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/quick-start">
-    Upload your first tracks and share them in minutes
-  </Card>
-  <Card title="Get the Apps" icon="mobile" href="/applications">
-    iOS, macOS desktop, and PWA for every device
-  </Card>
-  <Card title="Sharing & Access" icon="share-nodes" href="/sharing">
-    Private collaborators, public links, passwords, and paywalls
-  </Card>
-  <Card title="API Reference" icon="code" href="/api/introduction">
-    Build integrations with the Samply REST API
-  </Card>
-</CardGroup>
+<div className="relative">
+  <div className="relative z-10 px-4 lg:py-12 lg:pb-12 max-w-3xl mx-auto">
+    <h1 className="block text-5xl font-semibold text-center text-gray-900 dark:text-zinc-50 tracking-tight">
+      Samply
+    </h1>
 
-## What you can do with Samply
+    <div className="max-w-xl mx-auto px-4 mt-4 text-lg text-center text-gray-500 dark:text-zinc-500">
+      Securely stream, share, and collaborate on audio from your phone and desktop with Samply.
+    </div>
 
-<CardGroup cols={3}>
-  <Card title="Lossless Streaming" icon="waveform-lines" href="/playback-quality">
-    Stream at full fidelity — FLAC, Atmos, and adaptive bitrate
-  </Card>
-  <Card title="Version Stacks" icon="layer-group" href="/file-system">
-    Group revisions together and always share the latest version
-  </Card>
-  <Card title="Timed Comments" icon="comment-dots" href="/comments">
-    Leave feedback at any point in a track
-  </Card>
-  <Card title="Embed Players" icon="circle-play" href="/embedding">
-    Drop a Samply player onto any website with one line of code
-  </Card>
-  <Card title="Accept Payments" icon="credit-card" href="/payments">
-    Add paywalls to monetize downloads or access
-  </Card>
-  <Card title="Dropbox Sync" icon="dropbox" href="/dropbox">
-    Bounce files to Dropbox and they appear in Samply automatically
-  </Card>
-</CardGroup>
+    <div className="px-6 lg:px-0 mt-12 lg:mt-24 grid sm:grid-cols-2 gap-x-6 gap-y-4">
+      <HeroCard 
+        filename="rocket" 
+        title="Quickstart" 
+        description="Upload your first project and share it with listeners in minutes." 
+        href="/quickstart" 
+      />
 
-## Get started in four steps
+      <HeroCard
+        filename="concepts"
+        title="Core Concepts"
+        description="Projects, permissions, and your library."
+        href="/overview"
+      />
 
-<Steps>
-  <Step title="Create an account">
-    Sign up at [samply.app](https://samply.app). No credit card required.
-  </Step>
-  <Step title="Create a project and add tracks">
-    Click **New project** in the sidebar, then drag and drop your audio files onto it.
-  </Step>
-  <Step title="Share with listeners">
-    Click **Share** to invite collaborators by email or generate a public link.
-  </Step>
-  <Step title="Collect feedback">
-    Listeners can leave time-coded comments directly on your tracks.
-  </Step>
-</Steps>
+      <HeroCard
+        filename="apps"
+        title="Get the Apps"
+        description="iOS, MacOS, PWA for Android."
+        href="/applications"
+      />
 
-<Note>
-  Need help? Reach the Samply team via the in-app chat, Monday through Friday.
-</Note>
+      <HeroCard
+        filename="api"
+        title="API Integration"
+        description="Seamlessly integrate Samply into your workflow."
+        href="/api/introduction"
+      />
+    </div>
+  </div>
+</div>
